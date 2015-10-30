@@ -201,6 +201,7 @@ const z_crc_t FAR * ZEXPORT get_crc_table()
 /* ========================================================================= */
 #define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
+#define DO4 DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
 unsigned long ZEXPORT crc32(crc, buf, len)
@@ -227,10 +228,17 @@ unsigned long ZEXPORT crc32(crc, buf, len)
     }
 #endif /* BYFOUR */
     crc = crc ^ 0xffffffffUL;
-    while (len >= 8) {
-        DO8;
-        len -= 8;
-    }
+#ifdef UNROLL_LESS
+	while (len >= 4) {
+		DO4;
+		len -= 4;
+	}
+#else
+	while (len >= 8) {
+		DO8;
+		len -= 8;
+	}
+#endif 
     if (len) do {
         DO1;
     } while (--len);

@@ -102,13 +102,22 @@ uLong ZEXPORT adler32(adler, buf, len)
     }
 
     /* do length NMAX blocks -- requires just one modulo operation */
-    while (len >= NMAX) {
-        len -= NMAX;
-        n = NMAX / 16;          /* NMAX is divisible by 16 */
-        do {
-            DO16(buf);          /* 16 sums unrolled */
-            buf += 16;
-        } while (--n);
+	while (len >= NMAX) {
+		len -= NMAX;
+#ifndef UNROLL_LESS
+		n = NMAX / 16;          /* NMAX is divisible by 16 */
+#else
+		n = NMAX / 8;           /* NMAX is divisible by 8 */
+#endif
+		do {
+#ifndef UNROLL_LESS
+			DO16(buf);          /* 16 sums unrolled */
+			buf += 16;
+#else
+			DO8(buf, 0);         /* 8 sums unrolled */
+			buf += 8;
+#endif
+		} while (--n);
         MOD(adler);
         MOD(sum2);
     }
