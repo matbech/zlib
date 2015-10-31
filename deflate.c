@@ -107,7 +107,8 @@ extern void ZLIB_INTERNAL crc_finalize(deflate_state *const s);
 extern void ZLIB_INTERNAL copy_with_crc(z_streamp strm, Bytef *dst, long size);
 
 #ifdef _MSC_VER
-#define INLINE __inline
+// __forceinline is apparently required (__inline is not sufficient) for VS14 to inline the insert_string_sse function with /O2
+#define INLINE __forceinline
 #else
 #define INLINE inline
 #endif
@@ -714,7 +715,7 @@ int ZEXPORT deflate (strm, flush)
     if (s->status == INIT_STATE) {
 #ifdef GZIP
         if (s->wrap == 2) {
-            strm->adler = crc32(0L, Z_NULL, 0);
+            crc_reset(s);
             put_byte(s, 31);
             put_byte(s, 139);
             put_byte(s, 8);
@@ -976,6 +977,7 @@ int ZEXPORT deflate (strm, flush)
     /* Write the trailer */
 #ifdef GZIP
     if (s->wrap == 2) {
+        crc_finalize(s);
         put_byte(s, (Byte)(strm->adler & 0xff));
         put_byte(s, (Byte)((strm->adler >> 8) & 0xff));
         put_byte(s, (Byte)((strm->adler >> 16) & 0xff));
