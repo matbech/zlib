@@ -7,11 +7,11 @@
  *
  * Copyright (C) 2013 Intel Corporation. All rights reserved.
  * Authors:
- * 	Wajdi Feghali   <wajdi.k.feghali@intel.com>
- * 	Jim Guilford    <james.guilford@intel.com>
- * 	Vinodh Gopal    <vinodh.gopal@intel.com>
- * 	Erdinc Ozturk   <erdinc.ozturk@intel.com>
- * 	Jim Kukunas     <james.t.kukunas@linux.intel.com>
+ *     Wajdi Feghali   <wajdi.k.feghali@intel.com>
+ *     Jim Guilford    <james.guilford@intel.com>
+ *     Vinodh Gopal    <vinodh.gopal@intel.com>
+ *     Erdinc Ozturk   <erdinc.ozturk@intel.com>
+ *     Jim Kukunas     <james.t.kukunas@linux.intel.com>
  *
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
@@ -97,14 +97,14 @@ local void fold_2(deflate_state *z_const s,
     *xmm_crc3 = _mm_clmulepi64_si128(*xmm_crc3, xmm_fold4, 0x10);
     ps_crc3 = _mm_castsi128_ps(*xmm_crc3);
     ps_crc1 = _mm_castsi128_ps(*xmm_crc1);
-    ps_res31= _mm_xor_ps(ps_crc3, ps_crc1);
+    ps_res31 = _mm_xor_ps(ps_crc3, ps_crc1);
 
     *xmm_crc2 = *xmm_crc0;
     *xmm_crc0 = _mm_clmulepi64_si128(*xmm_crc0, xmm_fold4, 0x01);
     *xmm_crc2 = _mm_clmulepi64_si128(*xmm_crc2, xmm_fold4, 0x10);
     ps_crc0 = _mm_castsi128_ps(*xmm_crc0);
     ps_crc2 = _mm_castsi128_ps(*xmm_crc2);
-    ps_res20= _mm_xor_ps(ps_crc0, ps_crc2);
+    ps_res20 = _mm_xor_ps(ps_crc0, ps_crc2);
 
     *xmm_crc0 = x_tmp2;
     *xmm_crc1 = x_tmp3;
@@ -137,14 +137,14 @@ local void fold_3(deflate_state *z_const s,
     *xmm_crc2 = _mm_clmulepi64_si128(*xmm_crc2, xmm_fold4, 0x10);
     ps_crc1 = _mm_castsi128_ps(*xmm_crc1);
     ps_crc2 = _mm_castsi128_ps(*xmm_crc2);
-    ps_res21= _mm_xor_ps(ps_crc1, ps_crc2);
+    ps_res21 = _mm_xor_ps(ps_crc1, ps_crc2);
 
     *xmm_crc1 = *xmm_crc0;
     *xmm_crc0 = _mm_clmulepi64_si128(*xmm_crc0, xmm_fold4, 0x01);
     *xmm_crc1 = _mm_clmulepi64_si128(*xmm_crc1, xmm_fold4, 0x10);
     ps_crc0 = _mm_castsi128_ps(*xmm_crc0);
     ps_crc1 = _mm_castsi128_ps(*xmm_crc1);
-    ps_res10= _mm_xor_ps(ps_crc0, ps_crc1);
+    ps_res10 = _mm_xor_ps(ps_crc0, ps_crc1);
 
     *xmm_crc0 = x_tmp3;
     *xmm_crc1 = _mm_castps_si128(ps_res10);
@@ -201,21 +201,21 @@ local void fold_4(deflate_state *z_const s,
 }
 
 local z_const unsigned zalign(32) pshufb_shf_table[60] = {
-	0x84838281,0x88878685,0x8c8b8a89,0x008f8e8d, /* shl 15 (16 - 1)/shr1 */
-	0x85848382,0x89888786,0x8d8c8b8a,0x01008f8e, /* shl 14 (16 - 3)/shr2 */
-	0x86858483,0x8a898887,0x8e8d8c8b,0x0201008f, /* shl 13 (16 - 4)/shr3 */
-	0x87868584,0x8b8a8988,0x8f8e8d8c,0x03020100, /* shl 12 (16 - 4)/shr4 */
-	0x88878685,0x8c8b8a89,0x008f8e8d,0x04030201, /* shl 11 (16 - 5)/shr5 */
-	0x89888786,0x8d8c8b8a,0x01008f8e,0x05040302, /* shl 10 (16 - 6)/shr6 */
-	0x8a898887,0x8e8d8c8b,0x0201008f,0x06050403, /* shl  9 (16 - 7)/shr7 */
-	0x8b8a8988,0x8f8e8d8c,0x03020100,0x07060504, /* shl  8 (16 - 8)/shr8 */
-	0x8c8b8a89,0x008f8e8d,0x04030201,0x08070605, /* shl  7 (16 - 9)/shr9 */
-	0x8d8c8b8a,0x01008f8e,0x05040302,0x09080706, /* shl  6 (16 -10)/shr10*/
-	0x8e8d8c8b,0x0201008f,0x06050403,0x0a090807, /* shl  5 (16 -11)/shr11*/
-	0x8f8e8d8c,0x03020100,0x07060504,0x0b0a0908, /* shl  4 (16 -12)/shr12*/
-	0x008f8e8d,0x04030201,0x08070605,0x0c0b0a09, /* shl  3 (16 -13)/shr13*/
-	0x01008f8e,0x05040302,0x09080706,0x0d0c0b0a, /* shl  2 (16 -14)/shr14*/
-	0x0201008f,0x06050403,0x0a090807,0x0e0d0c0b  /* shl  1 (16 -15)/shr15*/
+    0x84838281, 0x88878685, 0x8c8b8a89, 0x008f8e8d, /* shl 15 (16 - 1)/shr1 */
+    0x85848382, 0x89888786, 0x8d8c8b8a, 0x01008f8e, /* shl 14 (16 - 3)/shr2 */
+    0x86858483, 0x8a898887, 0x8e8d8c8b, 0x0201008f, /* shl 13 (16 - 4)/shr3 */
+    0x87868584, 0x8b8a8988, 0x8f8e8d8c, 0x03020100, /* shl 12 (16 - 4)/shr4 */
+    0x88878685, 0x8c8b8a89, 0x008f8e8d, 0x04030201, /* shl 11 (16 - 5)/shr5 */
+    0x89888786, 0x8d8c8b8a, 0x01008f8e, 0x05040302, /* shl 10 (16 - 6)/shr6 */
+    0x8a898887, 0x8e8d8c8b, 0x0201008f, 0x06050403, /* shl  9 (16 - 7)/shr7 */
+    0x8b8a8988, 0x8f8e8d8c, 0x03020100, 0x07060504, /* shl  8 (16 - 8)/shr8 */
+    0x8c8b8a89, 0x008f8e8d, 0x04030201, 0x08070605, /* shl  7 (16 - 9)/shr9 */
+    0x8d8c8b8a, 0x01008f8e, 0x05040302, 0x09080706, /* shl  6 (16 -10)/shr10*/
+    0x8e8d8c8b, 0x0201008f, 0x06050403, 0x0a090807, /* shl  5 (16 -11)/shr11*/
+    0x8f8e8d8c, 0x03020100, 0x07060504, 0x0b0a0908, /* shl  4 (16 -12)/shr12*/
+    0x008f8e8d, 0x04030201, 0x08070605, 0x0c0b0a09, /* shl  3 (16 -13)/shr13*/
+    0x01008f8e, 0x05040302, 0x09080706, 0x0d0c0b0a, /* shl  2 (16 -14)/shr14*/
+    0x0201008f, 0x06050403, 0x0a090807, 0x0e0d0c0b  /* shl  1 (16 -15)/shr15*/
 };
 
 local void partial_fold(deflate_state *z_const s, z_const size_t len,
@@ -268,9 +268,7 @@ local void partial_fold(deflate_state *z_const s, z_const size_t len,
     *xmm_crc3 = _mm_castps_si128(ps_res);
 }
 
-ZLIB_INTERNAL void crc_fold_copy(deflate_state *z_const s,
-        unsigned char *dst, z_const unsigned char *src, long len)
-{
+ZLIB_INTERNAL void crc_fold_copy(deflate_state *const s, unsigned char *dst, const unsigned char *src, long len) {
     unsigned long algn_diff;
     __m128i xmm_t0, xmm_t1, xmm_t2, xmm_t3;
 
@@ -283,7 +281,7 @@ ZLIB_INTERNAL void crc_fold_copy(deflate_state *z_const s,
         goto partial;
     }
 
-    algn_diff = 0 - (uintptr_t)src & 0xF;
+    algn_diff = (0 - (uintptr_t)src) & 0xF;
     if (algn_diff) {
         xmm_crc_part = _mm_loadu_si128((__m128i *)src);
         _mm_storeu_si128((__m128i *)dst, xmm_crc_part);
