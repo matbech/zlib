@@ -1598,7 +1598,7 @@ local void fill_window_c(s)
 }
 #endif
 
-local void fill_window(deflate_state *s)
+local INLINE void fill_window(deflate_state *s)
 {
 #ifdef X86_NOCHECK_SSE2
     fill_window_sse(s);
