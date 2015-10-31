@@ -253,7 +253,9 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 
 /* Reverse the bytes in a 32-bit value */
-#ifdef _MSC_VER
+#if defined(__GNUC__) || defined(__clang__)
+#define ZSWAP32(q) __builtin_bswap32(q)
+#elif defined(_MSC_VER)
 #define ZSWAP32(q) _byteswap_ulong(q)
 #else
 #define ZSWAP32(q) ((((q) >> 24) & 0xff) + (((q) >> 8) & 0xff00) + \
