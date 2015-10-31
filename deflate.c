@@ -176,14 +176,6 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
 /* rank Z_BLOCK between Z_NO_FLUSH and Z_PARTIAL_FLUSH */
 #define RANK(f) (((f) << 1) - ((f) > 4 ? 9 : 0))
 
-/* ===========================================================================
- * Update a hash value with the given input byte
- * IN  assertion: all calls to to UPDATE_HASH are made with consecutive
- *    input characters, so that a running hash key can be computed from the
- *    previous key instead of complete recalculation each time.
- */
-#define UPDATE_HASH(s,h,c) (h = (((h)<<s->hash_shift) ^ (c)) & s->hash_mask)
-
  /* ===========================================================================
  * Insert string str in the dictionary and set match_head to the previous head
  * of the hash chain (the most recent string with same hash key). Return
@@ -198,7 +190,7 @@ local INLINE Pos insert_string_c(deflate_state *const s, const Pos str)
 {
     Pos ret;
 
-    UPDATE_HASH(s, s->ins_h, s->window[(str) +(MIN_MATCH - 1)]);
+    UPDATE_HASH_C(s, s->ins_h, str);
 #ifdef FASTEST
     ret = s->head[s->ins_h];
 #else
@@ -1166,6 +1158,20 @@ local void lm_init (s)
 }
 
 #ifndef FASTEST
+
+#ifdef _MSC_VER
+#include <intrin.h>
+/* This is not a general purpose replacement for __builtin_ctzl. The function expects that value is != 0
+* Because of this assumption, trailing_zero is not initialized and the return value of _BitScanForward is not checked
+*/
+static __forceinline unsigned long __builtin_ctzl(unsigned long value)
+{
+    unsigned long trailing_zero;
+    _BitScanForward(&trailing_zero, value);
+    return trailing_zero;
+}
+#endif
+
 /* ===========================================================================
  * Set match_start to the longest match starting at the given string and
  * return its length. Matches shorter or equal to prev_length are discarded,
@@ -1201,7 +1207,7 @@ local uInt longest_match(s, cur_match)
     /* Compare two bytes at a time. Note: this is not always beneficial.
      * Try with and without -DUNALIGNED_OK to check.
      */
-    register Bytef *strend = s->window + s->strstart + MAX_MATCH - 1;
+    register Bytef *strend = s->window + s->strstart + MAX_MATCH;
     register ush scan_start = *(ushf*)scan;
     register ush scan_end   = *(ushf*)(scan+best_len-1);
 #else
@@ -1228,7 +1234,6 @@ local uInt longest_match(s, cur_match)
 
     do {
         Assert(cur_match < s->strstart, "no future");
-        match = s->window + cur_match;
 
         /* Skip to next match if the match length cannot increase
          * or if the match length is less than 2.  Note that the checks below
@@ -1239,11 +1244,26 @@ local uInt longest_match(s, cur_match)
          * the output of deflate is not affected by the uninitialized values.
          */
 #if (defined(UNALIGNED_OK) && MAX_MATCH == 258)
-        /* This code assumes sizeof(unsigned short) == 2. Do not use
-         * UNALIGNED_OK if your compiler uses a different size.
-         */
-        if (*(ushf*)(match+best_len-1) != scan_end ||
-            *(ushf*)match != scan_start) continue;
+        Bytef *win = s->window;
+        int cont = 1;
+        do {
+            match = win + cur_match;
+            if (*(ush*)(match+best_len-1) != scan_end) {
+                if ((cur_match = prev[cur_match & wmask]) > limit
+                    && --chain_length != 0) {
+                    continue;
+                } else {
+                    cont = 0;
+                }
+            }
+            break;
+        } while (1);
+
+        if (!cont)
+            break;
+
+        if (*(ush*)match != scan_start)
+            continue;
 
         /* It is not necessary to compare scan[2] and match[2] since they are
          * always equal when the other bytes match, given that the hash keys
@@ -1254,24 +1274,33 @@ local uInt longest_match(s, cur_match)
          * necessary to put more guard bytes at the end of the window, or
          * to check more often for insufficient lookahead.
          */
-        Assert(scan[2] == match[2], "scan[2]?");
-        scan++, match++;
+        scan += 2, match+=2;
+        Assert(*scan == *match, "match[2]?");
         do {
-        } while (*(ushf*)(scan+=2) == *(ushf*)(match+=2) &&
-                 *(ushf*)(scan+=2) == *(ushf*)(match+=2) &&
-                 *(ushf*)(scan+=2) == *(ushf*)(match+=2) &&
-                 *(ushf*)(scan+=2) == *(ushf*)(match+=2) &&
-                 scan < strend);
-        /* The funny "do {}" generates better code on most compilers */
+            unsigned long sv = *(unsigned long*)(void*)scan;
+            unsigned long mv = *(unsigned long*)(void*)match;
+            unsigned long xor = sv ^ mv;
+            if (xor) {
+                int match_byte = __builtin_ctzl(xor) / 8;
+                scan += match_byte;
+                match += match_byte;
+                break;
+            } else {
+                scan += sizeof(unsigned long);
+                match += sizeof(unsigned long);
+            }
+        } while (scan < strend);
 
-        /* Here, scan <= window+strstart+257 */
-        Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
-        if (*scan == *match) scan++;
+        if (scan > strend)
+            scan = strend;
 
-        len = (MAX_MATCH - 1) - (int)(strend-scan);
-        scan = strend - (MAX_MATCH-1);
+        Assert(scan <= s->window + (unsigned) (s->window_size - 1), "wild scan");
+
+        len = MAX_MATCH - (int) (strend - scan);
+        scan = strend - MAX_MATCH;
 
 #else /* UNALIGNED_OK */
+        match = s->window + cur_match;
 
         if (match[best_len]   != scan_end  ||
             match[best_len-1] != scan_end1 ||
@@ -1506,12 +1535,12 @@ local void fill_window_c(s)
         if (s->lookahead + s->insert >= MIN_MATCH) {
             uInt str = s->strstart - s->insert;
             s->ins_h = s->window[str];
-            UPDATE_HASH(s, s->ins_h, s->window[str + 1]);
+            UPDATE_HASH_C(s, s->ins_h, s->window[str + 1]);
 #if MIN_MATCH != 3
-            Call UPDATE_HASH() MIN_MATCH-3 more times
+            Call UPDATE_HASH_C() MIN_MATCH-3 more times
 #endif
             while (s->insert) {
-                UPDATE_HASH(s, s->ins_h, s->window[str + MIN_MATCH-1]);
+                UPDATE_HASH_C(s, s->ins_h, s->window[str + MIN_MATCH-1]);
 #ifndef FASTEST
                 s->prev[str & s->w_mask] = s->head[s->ins_h];
 #endif
@@ -1570,14 +1599,14 @@ local void fill_window_c(s)
 local void fill_window(deflate_state *s)
 {
 #ifdef X86_NOCHECK_SSE2
-	fill_window_sse(s);
+    fill_window_sse(s);
 #else
-	if (x86_cpu_has_sse2) {
-		fill_window_sse(s);
-		return;
-	}
+    if (x86_cpu_has_sse2) {
+        fill_window_sse(s);
+        return;
+    }
 
-	fill_window_c(s);
+    fill_window_c(s);
 #endif
 }
 

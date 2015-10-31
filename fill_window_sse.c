@@ -12,25 +12,11 @@
 #include <immintrin.h>
 #include "deflate.h"
 
-#define UPDATE_HASH(s,h,i) \
-    {\
-        if (s->level < 6) { \
-            h = (3483 * (s->window[i]) +\
-                 23081* (s->window[i+1]) +\
-                 6954 * (s->window[i+2]) +\
-                 20947* (s->window[i+3])) & s->hash_mask;\
-        } else {\
-            h = (25881* (s->window[i]) +\
-                 24674* (s->window[i+1]) +\
-                 25811* (s->window[i+2])) & s->hash_mask;\
-        }\
-    }\
-
-extern int read_buf OF((z_streamp strm, Bytef *buf, unsigned size));
+extern int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size));
 
 void fill_window_sse(deflate_state *s)
 {
-    const __m128i xmm_wsize = _mm_set1_epi16(s->w_size);
+    z_const __m128i xmm_wsize = _mm_set1_epi16(s->w_size);
 
     register unsigned n;
     register Posf *p;
@@ -121,14 +107,25 @@ void fill_window_sse(deflate_state *s)
         s->lookahead += n;
 
         /* Initialize the hash value now that we have some input: */
-        if (s->lookahead >= MIN_MATCH) {
-            uInt str = s->strstart;
+        if (s->lookahead + s->insert >= MIN_MATCH) {
+            uInt str = s->strstart - s->insert;
             s->ins_h = s->window[str];
             if (str >= 1)
                 UPDATE_HASH(s, s->ins_h, str + 1 - (MIN_MATCH-1));
 #if MIN_MATCH != 3
             Call UPDATE_HASH() MIN_MATCH-3 more times
 #endif
+            while (s->insert) {
+                UPDATE_HASH(s, s->ins_h, str);
+#ifndef FASTEST
+                s->prev[str & s->w_mask] = s->head[s->ins_h];
+#endif
+                s->head[s->ins_h] = (Pos)str;
+                str++;
+                s->insert--;
+                if (s->lookahead + s->insert < MIN_MATCH)
+                    break;
+            }
         }
         /* If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
          * but this is not important since only literal bytes will be emitted.
