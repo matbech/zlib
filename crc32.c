@@ -57,10 +57,10 @@
 #ifdef BYFOUR
 #if BYTE_ORDER == LITTLE_ENDIAN
 local unsigned long crc32_little OF((unsigned long,
-	const unsigned char FAR *, unsigned));
+    const unsigned char FAR *, unsigned));
 #elif BYTE_ORDER == BIG_ENDIAN
 local unsigned long crc32_big OF((unsigned long,
-	const unsigned char FAR *, unsigned));
+    const unsigned char FAR *, unsigned));
 #endif
 #  define TBLS 8
 #else
@@ -238,23 +238,23 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #ifdef BYFOUR
     if (sizeof(void *) == sizeof(ptrdiff_t)) {
 #if BYTE_ORDER == LITTLE_ENDIAN
-		return crc32_little(crc, buf, len);
+        return crc32_little(crc, buf, len);
 #elif BYTE_ORDER == BIG_ENDIAN
-		return crc32_big(crc, buf, len);
+        return crc32_big(crc, buf, len);
 #endif
     }
 #endif /* BYFOUR */
     crc = crc ^ 0xffffffffUL;
 #ifdef UNROLL_LESS
-	while (len >= 4) {
-		DO4;
-		len -= 4;
-	}
+    while (len >= 4) {
+        DO4;
+        len -= 4;
+    }
 #else
-	while (len >= 8) {
-		DO8;
-		len -= 8;
-	}
+    while (len >= 8) {
+        DO8;
+        len -= 8;
+    }
 #endif 
     if (len) do {
         DO1;
@@ -289,10 +289,10 @@ local unsigned long crc32_little(crc, buf, len)
     buf4 = (const z_crc_t FAR *)(const void FAR *)buf;
 
 #ifndef UNROLL_LESS
-	while (len >= 32) {
-		DOLIT32;
-		len -= 32;
-	}
+    while (len >= 32) {
+        DOLIT32;
+        len -= 32;
+    }
 #endif
 
     while (len >= 4) {
@@ -470,8 +470,9 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s)
 
 ZLIB_INTERNAL void crc_finalize(deflate_state *const s)
 {
-    if (x86_cpu_has_pclmulqdq)
+    if (x86_cpu_has_pclmulqdq) {
         s->strm->adler = crc_fold_512to32(s);
+    }
 }
 
 ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
