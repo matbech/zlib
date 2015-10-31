@@ -472,5 +472,5 @@ unsigned ZLIB_INTERNAL crc_fold_512to32(deflate_state *z_const s)
 
     crc = _mm_extract_epi32(xmm_crc3, 2);
     return ~crc;
-//    CRC_SAVE(s)
+    CRC_SAVE(s)
 }
