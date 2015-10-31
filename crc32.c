@@ -21,6 +21,22 @@
   DYNAMIC_CRC_TABLE and MAKECRCH can be #defined to write out crc32.h.
  */
 
+#ifdef __MINGW32__
+# include <sys/param.h>
+#elif _WIN32
+# define LITTLE_ENDIAN 1234
+# define BIG_ENDIAN 4321
+# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
+#  define BYTE_ORDER LITTLE_ENDIAN
+# else
+#  error Unknown endianness!
+# endif
+#elif __APPLE__
+# include <machine/endian.h>
+#else
+# include <endian.h>
+#endif
+
 #ifdef MAKECRCH
 #  include <stdio.h>
 #  ifndef DYNAMIC_CRC_TABLE
@@ -39,10 +55,13 @@
 #  define BYFOUR
 #endif
 #ifdef BYFOUR
-   local unsigned long crc32_little OF((unsigned long,
-                        const unsigned char FAR *, unsigned));
-   local unsigned long crc32_big OF((unsigned long,
-                        const unsigned char FAR *, unsigned));
+#if BYTE_ORDER == LITTLE_ENDIAN
+local unsigned long crc32_little OF((unsigned long,
+	const unsigned char FAR *, unsigned));
+#elif BYTE_ORDER == BIG_ENDIAN
+local unsigned long crc32_big OF((unsigned long,
+	const unsigned char FAR *, unsigned));
+#endif
 #  define TBLS 8
 #else
 #  define TBLS 1
@@ -218,13 +237,11 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 
 #ifdef BYFOUR
     if (sizeof(void *) == sizeof(ptrdiff_t)) {
-        z_crc_t endian;
-
-        endian = 1;
-        if (*((unsigned char *)(&endian)))
-            return crc32_little(crc, buf, len);
-        else
-            return crc32_big(crc, buf, len);
+#if BYTE_ORDER == LITTLE_ENDIAN
+		return crc32_little(crc, buf, len);
+#elif BYTE_ORDER == BIG_ENDIAN
+		return crc32_big(crc, buf, len);
+#endif
     }
 #endif /* BYFOUR */
     crc = crc ^ 0xffffffffUL;
@@ -270,10 +287,14 @@ local unsigned long crc32_little(crc, buf, len)
     }
 
     buf4 = (const z_crc_t FAR *)(const void FAR *)buf;
-    while (len >= 32) {
-        DOLIT32;
-        len -= 32;
-    }
+
+#ifndef UNROLL_LESS
+	while (len >= 32) {
+		DOLIT32;
+		len -= 32;
+	}
+#endif
+
     while (len >= 4) {
         DOLIT4;
         len -= 4;
