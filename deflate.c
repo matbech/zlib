@@ -204,8 +204,9 @@ local INLINE Pos insert_string_c(deflate_state *const s, const Pos str)
 
 local INLINE Pos insert_string(deflate_state *const s, const Pos str)
 {
-    if (x86_cpu_has_sse42)
+    if (x86_cpu_has_sse42) {
         return insert_string_sse(s, str);
+    }
     return insert_string_c(s, str);
 }
 
@@ -1883,15 +1884,26 @@ local block_state deflate_slow(s, flush)
              * the hash table.
              */
             s->lookahead -= s->prev_length-1;
-            s->prev_length -= 2;
-            do {
-                if (++s->strstart <= max_insert) {
-                    insert_string(s, s->strstart);
+
+            uInt string_count = s->prev_length - 2;
+            uInt insert_count = min(string_count, max_insert - s->strstart);
+            uInt start_pos = s->strstart + 1;
+            if (x86_cpu_has_sse42) {
+                for (uInt i = 0; i < insert_count; i++) {
+                    insert_string_sse(s, start_pos);
+                    start_pos++;
                 }
-            } while (--s->prev_length != 0);
+            }
+            else {
+                for (uInt i = 0; i < insert_count; i++) {
+                    insert_string_c(s, start_pos);
+                    start_pos++;
+                }
+            }
+            s->prev_length = 0;
             s->match_available = 0;
             s->match_length = MIN_MATCH-1;
-            s->strstart++;
+            s->strstart += string_count + 1;
 
             if (bflush) FLUSH_BLOCK(s, 0);
 
