@@ -311,10 +311,14 @@ local unsigned long crc32_big(crc, buf, len)
 
     buf4 = (const z_crc_t FAR *)(const void FAR *)buf;
     buf4--;
+
+#ifndef UNROLL_LESS
     while (len >= 32) {
         DOBIG32;
         len -= 32;
     }
+#endif
+
     while (len >= 4) {
         DOBIG4;
         len -= 4;
