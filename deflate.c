@@ -1421,22 +1421,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-local void fill_window_c(deflate_state *s);
-
-local void fill_window(deflate_state *s)
-{
 #ifndef X86_NOCHECK_SSE2
-    fill_window_sse(s);
-#else
-    if (x86_cpu_has_sse2) {
-        fill_window_sse(s);
-        return;
-    }
-
-    fill_window_c(s);
-#endif
-}
-
 local void fill_window_c(s)
     deflate_state *s;
 {
@@ -1579,6 +1564,21 @@ local void fill_window_c(s)
 
     Assert((ulg)s->strstart <= s->window_size - MIN_LOOKAHEAD,
            "not enough room for search");
+}
+#endif
+
+local void fill_window(deflate_state *s)
+{
+#ifdef X86_NOCHECK_SSE2
+	fill_window_sse(s);
+#else
+	if (x86_cpu_has_sse2) {
+		fill_window_sse(s);
+		return;
+	}
+
+	fill_window_c(s);
+#endif
 }
 
 /* ===========================================================================
