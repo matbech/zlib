@@ -1162,7 +1162,7 @@ local void lm_init (s)
 
 #ifndef FASTEST
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <intrin.h>
 /* This is not a general purpose replacement for __builtin_ctzl. The function expects that value is != 0
 * Because of this assumption, trailing_zero is not initialized and the return value of _BitScanForward is not checked
