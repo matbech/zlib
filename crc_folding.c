@@ -275,9 +275,14 @@ ZLIB_INTERNAL void crc_fold_copy(deflate_state *z_const s, unsigned char *dst, z
     CRC_LOAD(s)
 
     if (len < 16) {
+        char zalign(16) partial_buf[16] = { 0 };
+
         if (len == 0)
             return;
-        xmm_crc_part = _mm_loadu_si128((__m128i *)src);
+
+        memcpy(partial_buf, src, len);
+        xmm_crc_part = _mm_loadu_si128((const __m128i *)partial_buf);
+        memcpy(dst, partial_buf, len);
         goto partial;
     }
 
@@ -383,8 +388,9 @@ ZLIB_INTERNAL void crc_fold_copy(deflate_state *z_const s, unsigned char *dst, z
         xmm_crc_part = _mm_load_si128((__m128i *)src);
     }
 
-partial:
     _mm_storeu_si128((__m128i *)dst, xmm_crc_part);
+
+partial:
     partial_fold(s, len, &xmm_crc0, &xmm_crc1, &xmm_crc2, &xmm_crc3,
         &xmm_crc_part);
 done:
