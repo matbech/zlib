@@ -26,7 +26,7 @@
 #elif _WIN32
 # define LITTLE_ENDIAN 1234
 # define BIG_ENDIAN 4321
-# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
+# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64) || defined(_M_ARM)
 #  define BYTE_ORDER LITTLE_ENDIAN
 # else
 #  error Unknown endianness!
@@ -461,26 +461,32 @@ uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
 
 ZLIB_INTERNAL void crc_reset(deflate_state *const s)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
         crc_fold_init(s);
         return;
     }
+#endif
     s->strm->adler = crc32(0L, Z_NULL, 0);
 }
 
 ZLIB_INTERNAL void crc_finalize(deflate_state *const s)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
         s->strm->adler = crc_fold_512to32(s);
     }
+#endif
 }
 
 ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
         crc_fold_copy(strm->state, dst, strm->next_in, size);
         return;
     }
+#endif
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
 }

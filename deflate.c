@@ -50,7 +50,9 @@
 /* @(#) $Id$ */
 
 #include "deflate.h"
+#if defined(_M_IX86) || defined(_M_AMD64)
 #include "x86.h"
+#endif
 
 const char deflate_copyright[] =
    " deflate 1.2.8 Copyright 1995-2013 Jean-loup Gailly and Mark Adler ";
@@ -113,8 +115,10 @@ extern void ZLIB_INTERNAL copy_with_crc(z_streamp strm, Bytef *dst, long size);
 #define INLINE inline
 #endif
 
+#if defined(_M_IX86) || defined(_M_AMD64)
 /* Inline optimisation */
 local INLINE Pos insert_string_sse(deflate_state *const s, const Pos str);
+#endif
 
 /* ===========================================================================
  * Local data
@@ -204,9 +208,11 @@ local INLINE Pos insert_string_c(deflate_state *const s, const Pos str)
 
 local INLINE Pos insert_string(deflate_state *const s, const Pos str)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_sse42) {
         return insert_string_sse(s, str);
     }
+#endif
     return insert_string_c(s, str);
 }
 
@@ -251,8 +257,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
     /* We overlay pending_buf and d_buf+l_buf. This works since the average
      * output size for (length,distance) codes is <= 24 bits.
      */
-
+#if defined(_M_IX86) || defined(_M_AMD64)
     x86_check_features();
+#endif
 
     if (version == Z_NULL || version[0] != my_version[0] ||
         stream_size != sizeof(z_stream)) {
@@ -309,10 +316,13 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
     s->w_size = 1 << s->w_bits;
     s->w_mask = s->w_size - 1;
 
+#if defined(_M_IX86) || defined(_M_AMD64)
     // for insert_string_sse which uses the crc32 instruction 
     if (x86_cpu_has_sse42) {
         s->hash_bits = 15;
-    } else {
+    } else 
+#endif
+    {
         s->hash_bits = memLevel + 7;
     }
 
@@ -1453,7 +1463,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#ifndef X86_NOCHECK_SSE2
+#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM)
 local void fill_window_c(s)
     deflate_state *s;
 {
@@ -1601,6 +1611,7 @@ local void fill_window_c(s)
 
 local INLINE void fill_window(deflate_state *s)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
 #ifdef X86_NOCHECK_SSE2
     fill_window_sse(s);
 #else
@@ -1609,6 +1620,9 @@ local INLINE void fill_window(deflate_state *s)
         return;
     }
 
+    fill_window_c(s);
+#endif
+#else
     fill_window_c(s);
 #endif
 }
@@ -1888,13 +1902,16 @@ local block_state deflate_slow(s, flush)
             uInt string_count = s->prev_length - 2;
             uInt insert_count = min(string_count, max_insert - s->strstart);
             uInt start_pos = s->strstart + 1;
+#if defined(_M_IX86) || defined(_M_AMD64)
             if (x86_cpu_has_sse42) {
                 for (uInt i = 0; i < insert_count; i++) {
                     insert_string_sse(s, start_pos);
                     start_pos++;
                 }
             }
-            else {
+            else 
+#endif
+            {
                 for (uInt i = 0; i < insert_count; i++) {
                     insert_string_c(s, start_pos);
                     start_pos++;
@@ -2059,6 +2076,7 @@ local block_state deflate_huff(s, flush)
     return block_done;
 }
 
+#if defined(_M_IX86) || defined(_M_AMD64)
 /* Safe to inline this as GCC/clang will use inline asm and Visual Studio will
 * use intrinsic without extra params
 */
@@ -2092,3 +2110,4 @@ local INLINE Pos insert_string_sse(deflate_state *const s, const Pos str)
     s->prev[str & s->w_mask] = ret;
     return ret;
 }
+#endif

@@ -397,6 +397,8 @@ void ZLIB_INTERNAL crc_fold_copy(deflate_state* z_const s,
     long len);
 unsigned ZLIB_INTERNAL crc_fold_512to32(deflate_state* z_const s);
 
+#if defined(_M_IX86) || defined(_M_AMD64)
 void ZLIB_INTERNAL fill_window_sse(deflate_state* s);
+#endif
 
 #endif /* DEFLATE_H */
