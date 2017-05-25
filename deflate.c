@@ -1174,15 +1174,15 @@ local void lm_init (s)
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #include <intrin.h>
-/* This is not a general purpose replacement for __builtin_ctzl. The function expects that value is != 0
-* Because of this assumption, trailing_zero is not initialized and the return value of _BitScanForward is not checked
+/* __builtin_ctzl
+ *  For 0, the result is undefined
+ *  the equivalent intrinsic on MSC is _BitScanForward
+ * _tzcnt_u32
+ *  For 0, the result is the size of the operand 
+ *  On processors that do not support TZCNT, the instruction byte encoding is executed as BSF. In this case the result for 0
+ *  is undefined.
 */
-static __forceinline unsigned long __builtin_ctzl(unsigned long value)
-{
-    unsigned long trailing_zero;
-    _BitScanForward(&trailing_zero, value);
-    return trailing_zero;
-}
+#define __builtin_ctzl _tzcnt_u32
 #endif
 
 /* ===========================================================================

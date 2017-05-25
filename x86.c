@@ -13,7 +13,6 @@
 int x86_cpu_has_sse2 = 0;
 int x86_cpu_has_sse42 = 0;
 int x86_cpu_has_pclmulqdq = 0;
-int x86_cpu_has_tzcnt = 0;
 
 static void _x86_check_features(void);
 
@@ -97,10 +96,4 @@ static void _x86_check_features(void)
     x86_cpu_has_sse42 = ecx & 0x100000;
     // All known cpus from Intel and AMD with CLMUL also support SSE4.2
     x86_cpu_has_pclmulqdq = ecx & 0x2;
-
-    // BMI1 bit
-    // https://en.wikipedia.org/wiki/Bit_Manipulation_Instruction_Sets#BMI1_.28Bit_Manipulation_Instruction_Set_1.29
-    // https://software.intel.com/sites/default/files/article/405250/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family.pdf
-    cpuid(7, &eax, &ebx, &ecx, &edx);    
-    x86_cpu_has_tzcnt = ebx & 0x8;
 }
