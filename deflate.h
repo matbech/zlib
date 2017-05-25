@@ -283,7 +283,7 @@ typedef struct internal_state {
  * Output a short LSB first on the stream.
  * IN assertion: there is enough room in pendingBuf.
  */
-#if defined(__x86_64) || defined(__i386_) || defined(_WIN32)
+#ifdef UNALIGNED_OK
 /* Compared to the else-clause's implementation, there are few advantages:
  *  - s->pending is loaded only once (else-clause's implementation needs to
  *    load s->pending twice due to the alias between s->pending and
@@ -294,8 +294,8 @@ typedef struct internal_state {
  *    cost of penalty of potentially unaligned access. 
  */
 #define put_short(s, w) { \
+    *(ushf*)(&s->pending_buf[s->pending]) = (w) ; \
     s->pending += 2; \
-    *(ushf*)(&s->pending_buf[s->pending - 2]) = (w) ; \
 }
 #else
 #define put_short(s, w) { \
