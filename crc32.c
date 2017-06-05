@@ -507,7 +507,7 @@ ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
     strm->adler = crc32(strm->adler, dst, size);
 }
 
-void ZEXPORT crc32_init_z(z_crc32_state *z_const state)
+void ZEXPORT crc32_init(z_crc32_state *z_const state)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
@@ -518,7 +518,7 @@ void ZEXPORT crc32_init_z(z_crc32_state *z_const state)
     state->crc0[0] = crc32_z(0L, Z_NULL, 0);
 }
 
-void ZEXPORT crc32_update_z(z_crc32_state *z_const state, const Bytef *buf, z_size_t len)
+void ZEXPORT crc32_update(z_crc32_state *z_const state, const Bytef *buf, z_size_t len)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
@@ -529,7 +529,7 @@ void ZEXPORT crc32_update_z(z_crc32_state *z_const state, const Bytef *buf, z_si
     state->crc0[0] = crc32_z(state->crc0[0], buf, len);
 }
 
-uLong ZEXPORT crc32_final_z(z_crc32_state *z_const state)
+uLong ZEXPORT crc32_final(z_crc32_state *z_const state)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {

@@ -1754,12 +1754,12 @@ typedef struct z_crc32_state_s {
 	uLong /*zalign(16)*/ crc0[4 * 5];
 } FAR z_crc32_state;
 
-ZEXTERN void ZEXPORT crc32_init_z OF((z_crc32_state *z_const state));
+ZEXTERN void ZEXPORT crc32_init OF((z_crc32_state *z_const state));
 
-ZEXTERN void ZEXPORT crc32_update_z OF((z_crc32_state *z_const state, const Bytef *buf,
+ZEXTERN void ZEXPORT crc32_update OF((z_crc32_state *z_const state, const Bytef *buf,
     z_size_t len));
 
-ZEXTERN uLong ZEXPORT crc32_final_z OF((z_crc32_state *z_const state));
+ZEXTERN uLong ZEXPORT crc32_final OF((z_crc32_state *z_const state));
 
 /*
 ZEXTERN uLong ZEXPORT crc32_combine OF((uLong crc1, uLong crc2, z_off_t len2));
