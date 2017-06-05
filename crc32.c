@@ -478,7 +478,8 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
-        crc_fold_init(s);
+        crc_fold_init(s->crc0);
+        s->strm->adler = 0;
         return;
     }
 #endif
@@ -489,7 +490,7 @@ ZLIB_INTERNAL void crc_finalize(deflate_state *const s)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
-        s->strm->adler = crc_fold_512to32(s);
+        s->strm->adler = crc_fold_512to32(s->crc0);
     }
 #endif
 }
@@ -498,10 +499,42 @@ ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
     if (x86_cpu_has_pclmulqdq) {
-        crc_fold_copy(strm->state, dst, strm->next_in, size);
+        crc_fold_copy(strm->state->crc0, dst, strm->next_in, size);
         return;
     }
 #endif
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
+}
+
+void ZEXPORT crc32_init_z(z_crc32_state *z_const state)
+{
+#if defined(_M_IX86) || defined(_M_AMD64)
+    if (x86_cpu_has_pclmulqdq) {
+        crc_fold_init(state->crc0);
+        return;
+    }
+#endif
+    state->crc0[0] = crc32_z(0L, Z_NULL, 0);
+}
+
+void ZEXPORT crc32_update_z(z_crc32_state *z_const state, const Bytef *buf, z_size_t len)
+{
+#if defined(_M_IX86) || defined(_M_AMD64)
+    if (x86_cpu_has_pclmulqdq) {
+        crc_fold(state->crc0, buf, len);
+        return;
+    }
+#endif
+    state->crc0[0] = crc32_z(state->crc0[0], buf, len);
+}
+
+uLong ZEXPORT crc32_final_z(z_crc32_state *z_const state)
+{
+#if defined(_M_IX86) || defined(_M_AMD64)
+    if (x86_cpu_has_pclmulqdq) {
+        return crc_fold_512to32(state->crc0);
+    }
+#endif
+    return state->crc0[0];
 }
