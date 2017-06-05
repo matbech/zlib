@@ -29,8 +29,8 @@ https://github.com/madler/zlib
   This improves performance for AMD CPUs
 
 - Implementation optimized for modern CPUs (Intel Nehalem)  
-  Removed alignment loop in crc32
-  Adds temporary in crc32_little calcuation
+  Removed alignment loop in crc32  
+  Adds temporary in crc32_little calcuation  
   Less manual unrolling
 
 - Others  
