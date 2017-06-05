@@ -274,9 +274,9 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #ifdef BYFOUR
 
 /* ========================================================================= */
-#define DOLIT4 c ^= *buf4++; \
-        c = crc_table[3][c & 0xff] ^ crc_table[2][(c >> 8) & 0xff] ^ \
-            crc_table[1][(c >> 16) & 0xff] ^ crc_table[0][c >> 24]
+#define DOLIT4 tmp = *buf4++ ^ c; \
+        c = crc_table[3][tmp & 0xff] ^ crc_table[2][(tmp >> 8) & 0xff] ^ \
+            crc_table[1][(tmp >> 16) & 0xff] ^ crc_table[0][tmp >> 24]
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
@@ -286,6 +286,7 @@ local unsigned long crc32_little(crc, buf, len)
     z_size_t len;
 {
     register z_crc_t c;
+    register z_crc_t tmp;
     register const z_crc_t FAR *buf4;
 
     c = (z_crc_t)crc;
