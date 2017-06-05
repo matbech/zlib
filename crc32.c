@@ -57,10 +57,10 @@
 #ifdef BYFOUR
 #if BYTE_ORDER == LITTLE_ENDIAN
 local unsigned long crc32_little OF((unsigned long,
-    const unsigned char FAR *, unsigned));
+    const unsigned char FAR *, z_size_t));
 #elif BYTE_ORDER == BIG_ENDIAN
 local unsigned long crc32_big OF((unsigned long,
-    const unsigned char FAR *, unsigned));
+    const unsigned char FAR *, z_size_t));
 #endif
 #  define TBLS 8
 #else
