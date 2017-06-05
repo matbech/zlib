@@ -1749,8 +1749,9 @@ ZEXTERN uLong ZEXPORT crc32_z OF((uLong adler, const Bytef *buf,
     z_size_t len));
 
 
+// The struct should preferably be aligned to a 16 byte boundary for aligned access (128-bit SIMD register)
 typedef struct z_crc32_state_s {
-    unsigned /*zalign(16)*/ crc0[4 * 5];
+	uLong /*zalign(16)*/ crc0[4 * 5];
 } FAR z_crc32_state;
 
 ZEXTERN void ZEXPORT crc32_init_z OF((z_crc32_state *z_const state));
