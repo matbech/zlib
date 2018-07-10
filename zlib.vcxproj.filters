@@ -91,8 +91,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="zlib.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="win32\zlib1.rc" />
   </ItemGroup>
 </Project>
