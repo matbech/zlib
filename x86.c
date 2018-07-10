@@ -43,8 +43,8 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
 #include <windows.h>
 #include <stdint.h>
 
-static volatile int32_t once_control = 0;
-static int fake_pthread_once(volatile int32_t *once_control,
+static volatile long once_control = 0;
+static int fake_pthread_once(volatile long *once_control,
                              void (*init_routine)(void));
 
 void x86_check_features(void)
@@ -53,7 +53,7 @@ void x86_check_features(void)
 }
 
 /* Copied from "perftools_pthread_once" in tcmalloc */
-static int fake_pthread_once(volatile int32_t *once_control,
+static int fake_pthread_once(volatile long *once_control,
                              void (*init_routine)(void)) {
     // Try for a fast path first. Note: this should be an acquire semantics read
     // It is on x86 and x64, where Windows runs.
