@@ -77,13 +77,13 @@ static int fake_pthread_once(volatile long *once_control,
 }
 
 static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
-    unsigned int registers[4];
+    int registers[4];
     __cpuid(registers, info);
 
-    *eax = registers[0];
-    *ebx = registers[1];
-    *ecx = registers[2];
-    *edx = registers[3];
+    *eax = (unsigned)registers[0];
+    *ebx = (unsigned)registers[1];
+    *ecx = (unsigned)registers[2];
+    *edx = (unsigned)registers[3];
 }
 #endif  /* _MSC_VER */
 
