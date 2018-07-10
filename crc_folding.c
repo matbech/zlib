@@ -19,6 +19,7 @@
 #include "deflate.h"
 
 #include <inttypes.h>
+// When compiling with llvm's cl.exe frontend, add -mpclmul -mssse3 -msse4.1
 #include <immintrin.h>
 #include <wmmintrin.h>
 
