@@ -1575,7 +1575,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM)
+#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM) || defined(_M_ARM64)
 local void fill_window_c(s)
     deflate_state *s;
 {

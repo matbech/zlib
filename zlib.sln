@@ -8,21 +8,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|ARM.ActiveCfg = Debug|ARM
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|ARM.Build.0 = Debug|ARM
+		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|ARM64.Build.0 = Debug|ARM64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|x64.ActiveCfg = Debug|x64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|x64.Build.0 = Debug|x64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|x86.ActiveCfg = Debug|Win32
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Debug|x86.Build.0 = Debug|Win32
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|ARM.ActiveCfg = Debug|ARM
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|ARM.Build.0 = Debug|ARM
+		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|ARM64.ActiveCfg = Release|ARM64
+		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|ARM64.Build.0 = Release|ARM64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|x64.ActiveCfg = Release|x64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|x64.Build.0 = Release|x64
 		{1E589AD6-7C41-3AFD-BC5F-4752E29B2B84}.Release|x86.ActiveCfg = Release|Win32
@@ -30,5 +36,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF25F207-4B4D-403B-B17C-2A6853CFADC9}
 	EndGlobalSection
 EndGlobal
