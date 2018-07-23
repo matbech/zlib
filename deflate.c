@@ -51,7 +51,7 @@
 
 #include "deflate.h"
 #if defined(_M_IX86) || defined(_M_AMD64)
-#include "x86.h"
+#include "arch\x86\x86.h"
 #endif
 
 const char deflate_copyright[] =

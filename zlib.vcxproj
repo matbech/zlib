@@ -468,7 +468,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="x86.h" />
+    <ClInclude Include="arch\x86\x86.h" />
     <ClInclude Include="zconf.h" />
     <ClInclude Include="zlib.h" />
     <ClInclude Include="crc32.h" />

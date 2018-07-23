@@ -45,7 +45,7 @@
 #endif /* MAKECRCH */
 
 #include "deflate.h"
-#include "x86.h"
+#include "arch\x86\x86.h"
 #include "zutil.h"      /* for STDC and FAR definitions */
 
 #define local static
