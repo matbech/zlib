@@ -55,6 +55,9 @@
     <ClCompile Include="arch\aarch64\insert_string_acle.c">
       <Filter>Source Files\arch\aarch64</Filter>
     </ClCompile>
+    <ClCompile Include="arch\x86\adler32_simd.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">
@@ -97,6 +100,9 @@
       <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
     <ClInclude Include="arch\x86\insert_string_sse.h">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="arch\x86\adler32_simd.h">
       <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
   </ItemGroup>

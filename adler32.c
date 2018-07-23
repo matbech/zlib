@@ -7,7 +7,9 @@
 
 #include "zutil.h"
 
-#ifdef _M_ARM64
+#if defined(_M_IX86) || defined(_M_AMD64)
+#include "arch/x86/adler32_simd.h"
+#elif defined(_M_ARM64)
 #include "arch/aarch64/aarch64.h"
 #endif
 
@@ -69,6 +71,11 @@ uLong ZEXPORT adler32_z(adler, buf, len)
     const Bytef *buf;
     z_size_t len;
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
+    return adler32_simd_(adler, buf, len);
+#elif defined(_M_ARM64)
+    return adler32_neon(adler, buf, len);
+#else
     unsigned long sum2;
     unsigned n;
 
@@ -148,6 +155,7 @@ uLong ZEXPORT adler32_z(adler, buf, len)
 
     /* return recombined sums */
     return adler | (sum2 << 16);
+#endif
 }
 
 /* ========================================================================= */
@@ -156,11 +164,7 @@ uLong ZEXPORT adler32(adler, buf, len)
     const Bytef *buf;
     uInt len;
 {
-#ifdef _M_ARM64
-    return adler32_neon(adler, buf, len);
-#else
     return adler32_z(adler, buf, len);
-#endif
 }
 
 /* ========================================================================= */

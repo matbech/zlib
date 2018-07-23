@@ -24,6 +24,9 @@ https://github.com/madler/zlib
   adler32: Adenilson Cavalcanti &lt;adenilson.cavalcanti@arm.com\>  
   fill_window: Mika T. Lindqvist &lt;postmaster@raasu.org\>  
 
+- adler32-simd from Chromium  
+  https://github.com/chromium/chromium/blob/master/third_party/zlib/adler32_simd.c  
+
 ## Additional changes
 - Support and optimizations for MSVC15 compiler  
   Support for _M_ARM and _M_ARM64    
