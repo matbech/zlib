@@ -1572,7 +1572,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM)
+#if defined(_M_ARM)
 local void fill_window_c(s)
     deflate_state *s;
 {
@@ -1696,16 +1696,7 @@ local void fill_window_c(s)
 local INLINE void fill_window(deflate_state *s)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
-#ifdef X86_NOCHECK_SSE2
     fill_window_sse(s);
-#else
-    if (x86_cpu_has_sse2) {
-        fill_window_sse(s);
-        return;
-    }
-
-    fill_window_c(s);
-#endif
 #elif defined(_M_ARM64)
     fill_window_arm(s);
 #else

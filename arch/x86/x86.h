@@ -10,7 +10,6 @@
 
 typedef struct internal_state deflate_state;
 
-extern int x86_cpu_has_sse2;
 extern int x86_cpu_has_sse42;
 extern int x86_cpu_has_pclmulqdq;
 
