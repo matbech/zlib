@@ -7,6 +7,10 @@
 
 #include "zutil.h"
 
+#ifdef _M_ARM64
+#include "arch/aarch64/aarch64.h"
+#endif
+
 local uLong adler32_combine_ OF((uLong adler1, uLong adler2, z_off64_t len2));
 
 #define BASE 65521U     /* largest prime smaller than 65536 */
@@ -152,7 +156,11 @@ uLong ZEXPORT adler32(adler, buf, len)
     const Bytef *buf;
     uInt len;
 {
+#ifdef _M_ARM64
+    return adler32_neon(adler, buf, len);
+#else
     return adler32_z(adler, buf, len);
+#endif
 }
 
 /* ========================================================================= */

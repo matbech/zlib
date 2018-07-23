@@ -43,6 +43,18 @@
     <ClCompile Include="arch\x86\x86.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
+    <ClCompile Include="arch\aarch64\adler32_neon.c">
+      <Filter>Source Files\arch\aarch64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\aarch64\crc32_acle.c">
+      <Filter>Source Files\arch\aarch64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\aarch64\fill_window_arm.c">
+      <Filter>Source Files\arch\aarch64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\aarch64\insert_string_acle.c">
+      <Filter>Source Files\arch\aarch64</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">
@@ -75,11 +87,14 @@
     <ClInclude Include="zutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="x86.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="zconf.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="arch\aarch64\aarch64.h">
+      <Filter>Source Files\arch\aarch64</Filter>
+    </ClInclude>
+    <ClInclude Include="arch\x86\x86.h">
+      <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +109,9 @@
     </Filter>
     <Filter Include="Source Files\arch\x86">
       <UniqueIdentifier>{722da3ef-6b7e-4d35-8625-c9c1868c5072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\arch\aarch64">
+      <UniqueIdentifier>{9ff305b3-89ac-4457-9bc3-5514c6a4615b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

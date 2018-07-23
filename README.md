@@ -20,6 +20,10 @@ https://github.com/madler/zlib
   inflate_fast: use memset  
   https://github.com/Dead2/zlib-ng
 
+- Optimizations for ARM
+  adler32: Adenilson Cavalcanti <adenilson.cavalcanti@arm.com>
+  fill_window: Mika T. Lindqvist <postmaster@raasu.org>
+
 ## Additional changes
 - Support and optimizations for MSVC15 compiler  
   Support for _M_ARM  

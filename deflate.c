@@ -52,6 +52,8 @@
 #include "deflate.h"
 #if defined(_M_IX86) || defined(_M_AMD64)
 #include "arch\x86\x86.h"
+#elif defined(_M_ARM64)
+#include "arch\aarch64\aarch64.h"
 #endif
 
 const char deflate_copyright[] =
@@ -209,6 +211,8 @@ local INLINE Pos insert_string(deflate_state *const s, const Pos str)
     if (x86_cpu_has_sse42) {
         return insert_string_sse(s, str);
     }
+#elif defined(_M_ARM64)
+    return insert_string_acle(s, str, 1);
 #endif
     return insert_string_c(s, str);
 }
@@ -348,6 +352,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
     s->w_size = 1 << s->w_bits;
     s->w_mask = s->w_size - 1;
 
+#if defined(_M_ARM64)
+    s->hash_bits = 15;
+#else
 #if defined(_M_IX86) || defined(_M_AMD64)
     // for insert_string_sse which uses the crc32 instruction 
     if (x86_cpu_has_sse42) {
@@ -357,6 +364,7 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
     {
         s->hash_bits = memLevel + 7;
     }
+#endif
 
     s->hash_size = 1 << s->hash_bits;
     s->hash_mask = s->hash_size - 1;
@@ -1575,7 +1583,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM) || defined(_M_ARM64)
+#if !defined(X86_NOCHECK_SSE2) || defined(_M_ARM)
 local void fill_window_c(s)
     deflate_state *s;
 {
@@ -1709,6 +1717,8 @@ local INLINE void fill_window(deflate_state *s)
 
     fill_window_c(s);
 #endif
+#elif defined(_M_ARM64)
+    fill_window_arm(s);
 #else
     fill_window_c(s);
 #endif
@@ -2118,6 +2128,9 @@ local block_state deflate_slow(s, flush)
             uInt string_count = s->prev_length - 2;
             uInt insert_count = min(string_count, max_insert - s->strstart);
             uInt start_pos = s->strstart + 1;
+#if defined(M_ARM64)
+            insert_string_acle(s, start_pos, insert_count);
+#else
 #if defined(_M_IX86) || defined(_M_AMD64)
             if (x86_cpu_has_sse42) {
                 for (uInt i = 0; i < insert_count; i++) {
@@ -2133,6 +2146,7 @@ local block_state deflate_slow(s, flush)
                     start_pos++;
                 }
             }
+#endif
             s->prev_length = 0;
             s->match_available = 0;
             s->match_length = MIN_MATCH-1;

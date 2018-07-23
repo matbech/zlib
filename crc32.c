@@ -45,7 +45,11 @@
 #endif /* MAKECRCH */
 
 #include "deflate.h"
+#if defined(_M_IX86) || defined(_M_AMD64)
 #include "arch\x86\x86.h"
+#elif defined(_M_ARM64)
+#include "arch\aarch64\aarch64.h"
+#endif
 #include "zutil.h"      /* for STDC and FAR definitions */
 
 #define local static
@@ -230,6 +234,10 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
 {
     if (buf == Z_NULL) return 0UL;
 
+#ifdef _M_ARM64
+    return crc32_acle(crc, buf, len);
+#else
+
 #ifdef DYNAMIC_CRC_TABLE
     if (crc_table_empty)
         make_crc_table();
@@ -260,6 +268,7 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
         DO1;
     } while (--len);
     return crc ^ 0xffffffffUL;
+#endif
 }
 
 /* ========================================================================= */
