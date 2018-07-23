@@ -52,6 +52,7 @@
 #include "deflate.h"
 #if defined(_M_IX86) || defined(_M_AMD64)
 #include "arch\x86\x86.h"
+#include "arch\x86\insert_string_sse.h"
 #elif defined(_M_ARM64)
 #include "arch\aarch64\aarch64.h"
 #endif
@@ -112,18 +113,6 @@ ZLIB_INTERNAL unsigned read_buf OF((z_streamp strm, Bytef *buf, unsigned size));
 extern void ZLIB_INTERNAL crc_reset(deflate_state *const s);
 extern void ZLIB_INTERNAL crc_finalize(deflate_state *const s);
 extern void ZLIB_INTERNAL copy_with_crc(z_streamp strm, Bytef *dst, long size);
-
-#ifdef _MSC_VER
-// __forceinline is apparently required (__inline is not sufficient) for VS14 to inline the insert_string_sse function with /O2
-#define INLINE __forceinline
-#else
-#define INLINE inline
-#endif
-
-#if defined(_M_IX86) || defined(_M_AMD64)
-/* Inline optimisation */
-local INLINE Pos insert_string_sse(deflate_state *const s, const Pos str);
-#endif
 
 /* ===========================================================================
  * Local data
@@ -2305,39 +2294,3 @@ local block_state deflate_huff(s, flush)
         FLUSH_BLOCK(s, 0);
     return block_done;
 }
-
-#if defined(_M_IX86) || defined(_M_AMD64)
-/* Safe to inline this as GCC/clang will use inline asm and Visual Studio will
-* use intrinsic without extra params
-*/
-local INLINE Pos insert_string_sse(deflate_state *const s, const Pos str)
-{
-    Pos ret;
-    unsigned *ip, val, h = 0;
-
-    ip = (unsigned *) &s->window[str];
-    val = *ip;
-
-    if (s->level >= 6)
-        val &= 0xFFFFFF;
-
-    /* Windows clang should use inline asm */
-#if defined(_MSC_VER) && !defined(__clang__)
-    h = _mm_crc32_u32(h, val);
-#elif defined(__i386__) || defined(__amd64__)
-    __asm__ __volatile__(
-        "crc32 %1,%0\n\t"
-        : "+r" (h)
-        : "r" (val)
-        );
-#else
-    /* This should never happen */
-    assert(0);
-#endif
-
-    ret = s->head[h & s->hash_mask];
-    s->head[h & s->hash_mask] = str;
-    s->prev[str & s->w_mask] = ret;
-    return ret;
-}
-#endif

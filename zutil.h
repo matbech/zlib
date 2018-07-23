@@ -313,4 +313,11 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #define zalign(x) __attribute__((aligned((x))))
 #endif
 
+#ifdef _MSC_VER
+// __forceinline is apparently required (__inline is not sufficient) for VS14 to inline the insert_string_sse function with /O2
+#define INLINE __forceinline
+#else
+#define INLINE inline
+#endif
+
 #endif /* ZUTIL_H */

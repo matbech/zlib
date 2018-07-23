@@ -469,6 +469,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="arch\aarch64\aarch64.h" />
+    <ClInclude Include="arch\x86\insert_string_sse.h" />
     <ClInclude Include="arch\x86\x86.h" />
     <ClInclude Include="zconf.h" />
     <ClInclude Include="zlib.h" />

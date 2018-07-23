@@ -392,19 +392,5 @@ void ZLIB_INTERNAL _tr_stored_block OF((deflate_state *s, charf *buf,
     } while(0)
 #define UPDATE_HASH_C(s,h,i) (h = (((h)<<s->hash_shift) ^ (s->window[i + (MIN_MATCH-1)])) & s->hash_mask)
 
- /* Functions that are SIMD optimised on x86 */
-void ZLIB_INTERNAL crc_fold_init(unsigned* z_const s);
-void ZLIB_INTERNAL crc_fold_copy(unsigned* z_const s,
-    unsigned char* dst,
-    z_const unsigned char* src,
-    long len);
-void ZLIB_INTERNAL crc_fold(unsigned* z_const s,
-    z_const unsigned char* src,
-    size_t len);
-unsigned ZLIB_INTERNAL crc_fold_512to32(unsigned* z_const s);
-
-#if defined(_M_IX86) || defined(_M_AMD64)
-void ZLIB_INTERNAL fill_window_sse(deflate_state* s);
-#endif
 
 #endif /* DEFLATE_H */
