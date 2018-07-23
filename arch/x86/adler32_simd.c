@@ -56,6 +56,10 @@ uint32_t ZLIB_INTERNAL adler32_simd_(  /* SSSE3 */
     const unsigned char *buf,
     z_size_t len)
 {
+    /* initial Adler-32 value */
+    if (buf == Z_NULL)
+        return 1L;
+
     /*
      * Split Adler-32 into component sums.
      */
