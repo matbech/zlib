@@ -34,14 +34,14 @@
     <ClCompile Include="zutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="crc_folding.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="arch\x86\crc_folding.c">
+      <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
-    <ClCompile Include="fill_window_sse.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="arch\x86\fill_window_sse.c">
+      <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
-    <ClCompile Include="x86.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="arch\x86\x86.c">
+      <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +88,12 @@
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{41AE1531-1571-33AE-97BA-7EB28329CDB2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\arch">
+      <UniqueIdentifier>{33acb8c6-68b6-49f0-8b91-eff3add49f82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\arch\x86">
+      <UniqueIdentifier>{722da3ef-6b7e-4d35-8625-c9c1868c5072}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
