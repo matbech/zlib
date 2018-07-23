@@ -26,7 +26,7 @@ https://github.com/madler/zlib
 
 ## Additional changes
 - Support and optimizations for MSVC15 compiler  
-  Support for _M_ARM  
+  Support for _M_ARM and _M_ARM64    
   Use __forceinline
 
 - Use tzcnt instead of bsf  
