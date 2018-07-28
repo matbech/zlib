@@ -11,15 +11,13 @@
 
 #include <immintrin.h>
 #include "deflate.h"
+#include "x86.h"
 
 extern int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size));
 
 ZLIB_INTERNAL void fill_window_sse(deflate_state *s)
 {
-    z_const __m128i xmm_wsize = _mm_set1_epi16(s->w_size);
-
     register unsigned n;
-    register Posf *p;
     unsigned more;    /* Amount of free space at the end of the window. */
     uInt wsize = s->w_size;
 
@@ -50,42 +48,9 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s)
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
-
-            /* Slide the hash table (could be avoided with 32 bit values
-               at the expense of memory usage). We slide even when level == 0
-               to keep the hash table consistent if we switch back to level > 0
-               later. (Using level 0 permanently is not an optimal usage of
-               zlib, so we don't care about this pathological case.)
-             */
-            n = s->hash_size;
-            p = &s->head[n];
-            p -= 8;
-            do {
-                __m128i value, result;
-
-                value = _mm_loadu_si128((__m128i *)p);
-                result = _mm_subs_epu16(value, xmm_wsize);
-                _mm_storeu_si128((__m128i *)p, result);
-
-                p -= 8;
-                n -= 8;
-            } while (n > 0);
-
-            n = wsize;
-#ifndef FASTEST
-            p = &s->prev[n];
-            p -= 8;
-            do {
-                __m128i value, result;
-
-                value = _mm_loadu_si128((__m128i *)p);
-                result = _mm_subs_epu16(value, xmm_wsize);
-                _mm_storeu_si128((__m128i *)p, result);
-
-                p -= 8;
-                n -= 8;
-            } while (n > 0);
-#endif
+            if (s->insert > s->strstart)
+                s->insert = s->strstart;
+            slide_hash_sse(s);
             more += wsize;
         }
         if (s->strm->avail_in == 0) break;
