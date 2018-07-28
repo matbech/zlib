@@ -6,19 +6,18 @@ https://github.com/madler/zlib
 
 ## 3rd Party Patches
 - Optimizations from Intel without the new deflate strategies (quick, medium)  
-  deflate: crc32 implementation with PCLMULQDQ optimized folding  
-  deflate: fill_window_sse  
+  crc32: crc32 implementation with PCLMULQDQ optimized folding  
+  deflate: slide_hash_sse in fill_window  
+  deflate: use crc32 (SIMD) to calculate hash 
   inflate: Reorganize inflate window layout  
   https://github.com/jtkukunas/zlib
 
-- Optimizations from Cloudflare  
-  deflate: use crc32 (SIMD) for hash  
-  deflate: longest_match optimizations  
+- Optimizations from Cloudflare   
+  deflate: longest_match optimizations (https://github.com/cloudflare/zlib/commit/31043308c3d3edfb487d2c4cbe7290bd5b63c65c)  
   https://github.com/cloudflare/zlib
 
 - Others small changes  
   put_short optimization  
-  inflate_fast: use memset  
   https://github.com/Dead2/zlib-ng
 
 - Optimizations for ARM  
@@ -30,7 +29,7 @@ https://github.com/madler/zlib
 
 ## Additional changes
 - Support and optimizations for MSVC15 compiler  
-  Support for _M_ARM and _M_ARM64    
+  Support for _M_ARM64    
   Use __forceinline
 
 - Use tzcnt instead of bsf  
@@ -46,7 +45,7 @@ https://github.com/madler/zlib
 
 ## New features
 - General purpose crc32 interface  
-  Based on Intel's PCLMULQDQ crc32 implementation which is already used for deflate.  
+  Based on Intel's PCLMULQDQ crc32 implementation.  
   New functions:  
   crc32_init  
   crc32_update  
