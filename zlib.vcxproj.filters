@@ -58,6 +58,9 @@
     <ClCompile Include="arch\x86\adler32_simd.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
+    <ClCompile Include="arch\x86\slide_sse.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">

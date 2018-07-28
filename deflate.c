@@ -225,6 +225,9 @@ local INLINE Pos insert_string(deflate_state *const s, const Pos str)
 local void slide_hash(s)
     deflate_state *s;
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
+    slide_hash_sse(s);
+#else
     unsigned n, m;
     Posf *p;
     uInt wsize = s->w_size;
@@ -245,6 +248,7 @@ local void slide_hash(s)
          * its value will never be used.
          */
     } while (--n);
+#endif
 #endif
 }
 
