@@ -8,7 +8,7 @@ https://github.com/madler/zlib
 - Optimizations from Intel without the new deflate strategies (quick, medium)  
   deflate: crc32 implementation with PCLMULQDQ optimized folding  
   deflate: fill_window_sse  
-  inflate: Reorganize inflate window layout
+  inflate: Reorganize inflate window layout  
   https://github.com/jtkukunas/zlib
 
 - Optimizations from Cloudflare  
