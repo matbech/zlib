@@ -486,8 +486,8 @@ uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
 
 ZLIB_INTERNAL void crc_reset(deflate_state *const s)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         crc_fold_init(s->crc0);
         s->strm->adler = 0;
         return;
@@ -498,8 +498,8 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s)
 
 ZLIB_INTERNAL void crc_finalize(deflate_state *const s)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         s->strm->adler = crc_fold_512to32(s->crc0);
     }
 #endif
@@ -507,8 +507,8 @@ ZLIB_INTERNAL void crc_finalize(deflate_state *const s)
 
 ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         crc_fold_copy(strm->state->crc0, dst, strm->next_in, size);
         return;
     }
@@ -519,8 +519,8 @@ ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 
 void ZEXPORT crc32_init(z_crc32_state *z_const state)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         crc_fold_init(state->crc0);
         return;
     }
@@ -530,8 +530,8 @@ void ZEXPORT crc32_init(z_crc32_state *z_const state)
 
 void ZEXPORT crc32_update(z_crc32_state *z_const state, const Bytef *buf, z_size_t len)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         crc_fold(state->crc0, buf, len);
         return;
     }
@@ -541,8 +541,8 @@ void ZEXPORT crc32_update(z_crc32_state *z_const state, const Bytef *buf, z_size
 
 uLong ZEXPORT crc32_final(z_crc32_state *z_const state)
 {
-#if defined(_M_IX86) || defined(_M_AMD64)
-    if (x86_cpu_has_pclmulqdq) {
+#if defined(USE_PCLMUL_CRC)
+    if (x86_cpu_has_pclmul) {
         return crc_fold_512to32(state->crc0);
     }
 #endif

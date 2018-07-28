@@ -11,7 +11,7 @@
 #include "x86.h"
 
 int x86_cpu_has_sse42 = 0;
-int x86_cpu_has_pclmulqdq = 0;
+int x86_cpu_has_pclmul = 0;
 
 static void _x86_check_features(void);
 
@@ -93,5 +93,5 @@ static void _x86_check_features(void)
 
     x86_cpu_has_sse42 = ecx & 0x100000;
     // All known cpus from Intel and AMD with CLMUL also support SSE4.2
-    x86_cpu_has_pclmulqdq = ecx & 0x2;
+    x86_cpu_has_pclmul = ecx & 0x2;
 }

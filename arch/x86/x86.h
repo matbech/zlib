@@ -6,12 +6,14 @@
 #ifndef X86_H
 #define X86_H
 
+#define USE_PCLMUL_CRC
+
 #include "zutil.h" // for ZLIB_INTERNAL
 
 typedef struct internal_state deflate_state;
 
 extern int x86_cpu_has_sse42;
-extern int x86_cpu_has_pclmulqdq;
+extern int x86_cpu_has_pclmul;
 
 void x86_check_features(void);
 
