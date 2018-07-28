@@ -11,6 +11,7 @@
 #endif
 
 #include "deflate.h"
+#include "update_hash.h"
 
 /* ===========================================================================
  * Insert string str in the dictionary and set match_head to the previous head
@@ -31,16 +32,9 @@ Pos insert_string_acle(deflate_state *const s, const Pos str, unsigned int count
     lp = str + count - 1; /* last position */
 
     for (p = str; p <= lp; p++) {
-        unsigned *ip, val, h, hm;
+        unsigned hm;
 
-        ip = (unsigned *)&s->window[p];
-        val = *ip;
-
-        if (s->level >= 6/*TRIGGER_LEVEL*/)
-            val &= 0xFFFFFF;
-
-        h = __crc32w(0, val);
-        hm = h & s->hash_mask;
+        UPDATE_HASH_CRC_INTERNAL(s, hm, *(unsigned *)s->window[p]);
 
         if (s->head[hm] != p) {
             s->prev[p & s->w_mask] = s->head[hm];

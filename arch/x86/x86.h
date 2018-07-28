@@ -15,7 +15,6 @@ extern int x86_cpu_has_pclmulqdq;
 
 void x86_check_features(void);
 
-void ZLIB_INTERNAL fill_window_sse(deflate_state* s);
 void ZLIB_INTERNAL slide_hash_sse(deflate_state *s);
 
 /* Functions that are SIMD optimised on x86 */

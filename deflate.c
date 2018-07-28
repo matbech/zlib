@@ -1576,7 +1576,7 @@ local void check_match(s, start, match, length)
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#if defined(_M_ARM)
+#if !defined(_M_ARM64)
 local void fill_window_c(s)
     deflate_state *s;
 {
@@ -1611,6 +1611,8 @@ local void fill_window_c(s)
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
+            if (s->insert > s->strstart)
+                s->insert = s->strstart;
             slide_hash(s);
             more += wsize;
         }
@@ -1635,13 +1637,20 @@ local void fill_window_c(s)
         /* Initialize the hash value now that we have some input: */
         if (s->lookahead + s->insert >= MIN_MATCH) {
             uInt str = s->strstart - s->insert;
-            s->ins_h = s->window[str];
-            UPDATE_HASH_C(s, s->ins_h, s->window[str + 1]);
-#if MIN_MATCH != 3
-            Call UPDATE_HASH_C() MIN_MATCH-3 more times
+
+#if defined(_M_IX86) || defined(_M_AMD64)
+	    if (!x86_cpu_has_sse42)
 #endif
+            {
+                s->ins_h = s->window[str];
+                UPDATE_HASH_C(s, s->ins_h, s->window[str + 1]);
+#if MIN_MATCH != 3
+            Call UPDATE_HASH() MIN_MATCH-3 more times
+#endif
+            }
+
             while (s->insert) {
-                UPDATE_HASH_C(s, s->ins_h, s->window[str + MIN_MATCH-1]);
+                UPDATE_HASH(s, s->ins_h, s->window[str + MIN_MATCH-1]);
 #ifndef FASTEST
                 s->prev[str & s->w_mask] = s->head[s->ins_h];
 #endif
@@ -1700,7 +1709,7 @@ local void fill_window_c(s)
 local INLINE void fill_window(deflate_state *s)
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
-    fill_window_sse(s);
+    fill_window_c(s);
 #elif defined(_M_ARM64)
     fill_window_arm(s);
 #else
@@ -1999,11 +2008,20 @@ local block_state deflate_fast(s, flush)
             {
                 s->strstart += s->match_length;
                 s->match_length = 0;
-                s->ins_h = s->window[s->strstart];
-                UPDATE_HASH(s, s->ins_h, s->window[s->strstart+1]);
+
+#if !defined(_M_ARM64)
+#if defined(_M_IX86) || defined(_M_AMD64)
+                if (!x86_cpu_has_sse42)
+#endif
+		        {
+                    s->ins_h = s->window[s->strstart];
+                    UPDATE_HASH_C(s, s->ins_h, s->window[s->strstart+1]);
 #if MIN_MATCH != 3
                 Call UPDATE_HASH() MIN_MATCH-3 more times
 #endif
+		        }
+#endif
+
                 /* If lookahead < MIN_MATCH, ins_h is garbage, but it does not
                  * matter since it will be recomputed at next deflate call.
                  */
