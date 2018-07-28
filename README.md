@@ -8,7 +8,7 @@ https://github.com/madler/zlib
 - Optimizations from Intel without the new deflate strategies (quick, medium)  
   crc32: crc32 implementation with PCLMULQDQ optimized folding  
   deflate: slide_hash_sse in fill_window  
-  deflate: use crc32 (SIMD) to calculate hash 
+  deflate: use crc32 (SIMD) to calculate hash  
   inflate: Reorganize inflate window layout  
   https://github.com/jtkukunas/zlib
 
