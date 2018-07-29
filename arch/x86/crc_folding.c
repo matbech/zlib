@@ -263,7 +263,7 @@ local void partial_fold(z_const size_t len,
     *xmm_crc3 = _mm_castps_si128(ps_res);
 }
 
-ZLIB_INTERNAL void crc_fold_copy(unsigned *z_const s, unsigned char *dst, z_const unsigned char *src, long len) {
+ZLIB_INTERNAL void crc_fold_copy(unsigned *z_const s, unsigned char *dst, z_const unsigned char *src, size_t len) {
     unsigned long algn_diff;
     __m128i xmm_t0, xmm_t1, xmm_t2, xmm_t3;
     char zalign(16) partial_buf[16] = { 0 };
@@ -410,7 +410,7 @@ local z_const unsigned zalign(16) crc_mask2[4] = {
     0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 };
 
-// Same as crc_fold_copy but without the copy and with size_t support
+// Same as crc_fold_copy but without the copy
 ZLIB_INTERNAL void crc_fold(unsigned *z_const s, z_const unsigned char *src, size_t len) {
     unsigned long algn_diff;
     size_t i;

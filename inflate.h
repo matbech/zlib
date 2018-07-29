@@ -149,19 +149,19 @@ static INLINE void inf_crc_copy(z_streamp strm, unsigned char FAR *const dst,
 
 #if !defined(NO_GZIP)
     if ((state->wrap & 2))
-        strm->adler = state->check = crc32(state->check, dst, len);
+        strm->adler = state->check = crc32_z(state->check, dst, len);
     else
 #endif
     if ((state->wrap & 1))
-        strm->adler = state->check = adler32(state->check, dst, len);
+        strm->adler = state->check = adler32_z(state->check, dst, len);
 }
 
 static INLINE void window_output_flush(z_streamp strm)
 {
     struct inflate_state *const state = (struct inflate_state *const)strm->state;
 
-    size_t woff, roff, copysz;
-    size_t nexto_len;
+    unsigned woff, roff, copysz;
+    unsigned nexto_len;
 
     if (state->wnext > strm->avail_out) {
         nexto_len = strm->avail_out;

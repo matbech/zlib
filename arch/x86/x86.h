@@ -24,7 +24,7 @@ void ZLIB_INTERNAL crc_fold_init(unsigned* z_const s);
 void ZLIB_INTERNAL crc_fold_copy(unsigned* z_const s,
     unsigned char* dst,
     z_const unsigned char* src,
-    long len);
+    size_t len);
 void ZLIB_INTERNAL crc_fold(unsigned* z_const s,
     z_const unsigned char* src,
     size_t len);
