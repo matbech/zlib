@@ -55,6 +55,7 @@
 #include "arch\x86\insert_string_sse.h"
 #elif defined(_M_ARM64)
 #include "arch\aarch64\aarch64.h"
+#include "arch\aarch64\update_hash.h"
 #endif
 
 const char deflate_copyright[] =

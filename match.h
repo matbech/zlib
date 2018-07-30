@@ -168,7 +168,7 @@ local uInt longest_match_slow(s, cur_match)
 			unsigned long mv = *(unsigned long*)(void*)match;
 			unsigned long xor = sv ^ mv;
 			if (xor) {
-				int match_byte = _tzcnt_u32(xor) / 8;
+				int match_byte = __builtin_ctzl(xor) / 8;
 				scan += match_byte;
 				match += match_byte;
 				break;
