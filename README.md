@@ -54,3 +54,6 @@ https://github.com/madler/zlib
   crc32_update  
   crc32_final  
   Brings ~200% performance improvement over the original zlib crc32 implementation
+
+## Performance
+The performance results and pre-built binaries can be found here: https://github.com/matbech/zlib-perf
