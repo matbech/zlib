@@ -94,10 +94,10 @@ uint32_t adler32_neon(uint32_t adler, const unsigned char *buf, size_t len) {
 
     uint32_t sum2;
     uint32_t pair[2];
-    int n = M_NMAX;
-    unsigned int done = 0;
+    size_t n = M_NMAX;
+    size_t done = 0;
     /* Oldie K&R code integration. */
-    unsigned int i;
+    size_t i;
 
     /* Split Adler-32 into component sums, it can be supplied by
      * the caller sites (e.g. in a PNG file).
