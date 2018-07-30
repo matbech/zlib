@@ -365,6 +365,7 @@
     <ClInclude Include="arch\x86\adler32_simd.h" />
     <ClInclude Include="arch\x86\insert_string_sse.h" />
     <ClInclude Include="arch\x86\x86.h" />
+    <ClInclude Include="match.h" />
     <ClInclude Include="zconf.h" />
     <ClInclude Include="zlib.h" />
     <ClInclude Include="crc32.h" />

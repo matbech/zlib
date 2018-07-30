@@ -15,6 +15,10 @@ https://github.com/madler/zlib
   deflate: longest_match optimizations (https://github.com/cloudflare/zlib/commit/31043308c3d3edfb487d2c4cbe7290bd5b63c65c)  
   https://github.com/cloudflare/zlib
 
+- Optimized longest_match  
+  https://github.com/gildor2/fast_zlib  
+  Adapted function to use crc32 (SIMD) to calculate hash and integrated match compare optimization from above  
+
 - Other small changes  
   put_short optimization (https://github.com/Dead2/zlib-ng/commit/666581bbc17eaea62acb47cf47ab35a037e9b9d0)  
   https://github.com/Dead2/zlib-ng

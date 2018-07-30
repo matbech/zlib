@@ -108,6 +108,9 @@
     <ClInclude Include="arch\aarch64\aarch64.h">
       <Filter>Source Files\arch\aarch64</Filter>
     </ClInclude>
+    <ClInclude Include="match.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
