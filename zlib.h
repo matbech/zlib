@@ -1746,10 +1746,6 @@ ZEXTERN uLong ZEXPORT crc32_z OF((uLong adler, const Bytef *buf,
      Same as crc32(), but with a size_t length.
 */
 
-ZEXTERN uLong ZEXPORT crc32_z OF((uLong adler, const Bytef *buf,
-    z_size_t len));
-
-
 /* The struct should preferably be aligned to a 16 byte boundary for aligned access (128-bit SIMD register) */
 /* requires C++11 */
 #ifdef __cplusplus
