@@ -330,6 +330,7 @@ local unsigned long crc32_little(crc, buf, len)
     return (unsigned long)c;
 }
 
+#if BYTE_ORDER == BIG_ENDIAN
 /* ========================================================================= */
 #define DOBIG4 c ^= *++buf4; \
         c = crc_table[4][c & 0xff] ^ crc_table[5][(c >> 8) & 0xff] ^ \
@@ -378,6 +379,7 @@ local unsigned long crc32_big(crc, buf, len)
     c = ~c;
     return (unsigned long)(ZSWAP32(c));
 }
+#endif
 
 #endif /* BYFOUR */
 
