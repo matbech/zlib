@@ -16,7 +16,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#include "deflate.h"
+#include "../../deflate.h"
 
 #include <inttypes.h>
 // When compiling with llvm's cl.exe frontend, add -mpclmul -mssse3 -msse4.1

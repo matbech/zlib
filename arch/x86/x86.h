@@ -8,7 +8,7 @@
 
 #define USE_PCLMUL_CRC
 
-#include "zutil.h" // for ZLIB_INTERNAL
+#include "../../zutil.h" // for ZLIB_INTERNAL
 
 typedef struct internal_state deflate_state;
 

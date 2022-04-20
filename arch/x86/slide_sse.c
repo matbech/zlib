@@ -8,7 +8,7 @@
  *
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
-#include "deflate.h"
+#include "../../deflate.h"
 
 #include <immintrin.h>
 
