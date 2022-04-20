@@ -10,7 +10,7 @@
 #include <arm_acle.h> // for __crc32w
 #endif
 
-#include "deflate.h"
+#include "../../deflate.h"
 #include "update_hash.h"
 
 /* ===========================================================================

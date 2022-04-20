@@ -5,7 +5,7 @@
 #ifndef __AARCH64__
 #define __AARCH64__
 
-#include "deflate.h" // for deflate_state
+#include "../../deflate.h" // for deflate_state
 
 // Depending on the compiler flavor, size_t may be defined in one or the other header. See:
 // http://stackoverflow.com/questions/26410466/gcc-linaro-compiler-throws-error-unknown-type-name-size-t

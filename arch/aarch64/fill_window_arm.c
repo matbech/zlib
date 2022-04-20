@@ -11,7 +11,7 @@
 /* @(#) $Id$ */
 
 //#include "zbuild.h"
-#include "deflate.h"
+#include "../../deflate.h"
 #include "aarch64.h"
 #include <stdint.h>
 

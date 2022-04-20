@@ -10,7 +10,7 @@
 #endif
 
 #include <stdint.h>
-#include <zconf.h>
+#include "../../zconf.h"
 #ifdef __linux__
 #  include <stddef.h>
 #endif
