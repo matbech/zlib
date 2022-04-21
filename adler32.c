@@ -8,7 +8,6 @@
 #include "zutil.h"
 
 #if defined(_M_IX86) || defined(_M_AMD64)
-#include "arch/x86/adler32_simd.h"
 #include "arch/x86/x86.h"
 #elif defined(_M_ARM64)
 #include "arch/aarch64/aarch64.h"

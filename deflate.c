@@ -227,7 +227,15 @@ local void slide_hash(s)
     deflate_state *s;
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
-    slide_hash_sse(s);
+    //x86_check_features();
+/* Disabled until we have all avx2 enabled
+    if (x86_cpu_has_avx2)
+    {
+        slide_hash_avx2(s);
+        return;
+    }
+*/
+    slide_hash_sse2(s);
 #else
     unsigned n, m;
     Posf *p;
