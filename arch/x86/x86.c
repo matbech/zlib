@@ -12,6 +12,7 @@
 
 int x86_cpu_has_sse42 = 0;
 int x86_cpu_has_pclmul = 0;
+int x86_cpu_has_avx2 = 0;
 
 static void _x86_check_features(void);
 
@@ -26,16 +27,14 @@ void x86_check_features(void)
     pthread_once(&cpu_check_inited_once, _x86_check_features);
 }
 
-static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
-    unsigned int _eax;
-    unsigned int _ebx;
-    unsigned int _ecx;
-    unsigned int _edx;
-    __cpuid(info, _eax, _ebx, _ecx, _edx);
-    *eax = _eax;
-    *ebx = _ebx;
-    *ecx = _ecx;
-    *edx = _edx;
+static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) 
+{
+    __cpuid(info, *eax, *ebx, *ecx, *edx);    
+}
+
+static void cpuidex(int info, int subinfo, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx)
+{
+    __cpuid_count(info, subinfo, *eax, *ebx, *ecx, *edx);
 }
 #else
 #include <intrin.h>
@@ -63,6 +62,17 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
     *ecx = (unsigned)registers[2];
     *edx = (unsigned)registers[3];
 }
+
+static void cpuidex(int info, int subinfo, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx)
+{
+    int registers[4];
+    __cpuidex(registers, info, subinfo);
+
+    *eax = (unsigned) registers[0];
+    *ebx = (unsigned) registers[1];
+    *ecx = (unsigned) registers[2];
+    *edx = (unsigned) registers[3];
+}
 #endif  /* _MSC_VER */
 
 static void _x86_check_features(void)
@@ -73,4 +83,16 @@ static void _x86_check_features(void)
     x86_cpu_has_sse42 = ecx & 0x100000;
     // All known cpus from Intel and AMD with CLMUL also support SSE4.2
     x86_cpu_has_pclmul = ecx & 0x2;
+
+    cpuid(0, &eax, &ebx, &ecx, &edx);
+    if (eax >= 7)
+    {
+        cpuidex(7 /*CPU_EXTENDED_PROC_INFO_FEATURE_BITS*/, 0, &eax, &ebx, &ecx, &edx);
+
+        x86_cpu_has_avx2 = ebx & (1 << 5);
+    }
+    else
+    {
+        x86_cpu_has_avx2 = 0;
+    }
 }
