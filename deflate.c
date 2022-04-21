@@ -52,7 +52,7 @@
 #include "deflate.h"
 #if defined(_M_IX86) || defined(_M_AMD64)
 #include "arch\x86\x86.h"
-#include "arch\x86\insert_string_sse.h"
+#include "arch\x86\insert_string_sse42.h"
 #elif defined(_M_ARM64)
 #include "arch\aarch64\aarch64.h"
 #include "arch\aarch64\update_hash.h"

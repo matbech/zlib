@@ -102,7 +102,7 @@
     <ClInclude Include="arch\x86\x86.h">
       <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
-    <ClInclude Include="arch\x86\insert_string_sse.h">
+    <ClInclude Include="arch\x86\insert_string_sse42.h">
       <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
     <ClInclude Include="arch\aarch64\update_hash.h">
