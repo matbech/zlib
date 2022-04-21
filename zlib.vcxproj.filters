@@ -73,6 +73,12 @@
     <ClCompile Include="chunkset.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="arch\x86\compare256_avx2.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="compare256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">

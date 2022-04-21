@@ -54,6 +54,7 @@
 #include "arch/x86/x86.h"
 #include "arch/x86/insert_string_sse42.h"
 #elif defined(_M_ARM64)
+#include "compare256.h"
 #include "arch/aarch64/aarch64.h"
 #include "arch/aarch64/update_hash.h"
 #endif
@@ -1275,34 +1276,6 @@ local void lm_init (s)
 
 #ifndef FASTEST
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <intrin.h>
-/* __builtin_ctzl
- *  - For 0, the result is undefined
- *  - On the x86 architecture, it is typically implemented using BSF
- *  - the equivalent intrinsic on MSC is _BitScanForward
- *
- * _tzcnt_u32
- *  - For 0, the result is the size of the operand 
- *  - On processors that do not support TZCNT, the instruction byte encoding is executed as BSF. In this case the result for 0
- *    is undefined.
- *  - Performance:
- *    + AMD: The reciprocal throughput for TZCNT is 2 vs 3 for BSF
- *    + Intel: On modern Intel CPUs (Haswell), the performance of TZCNT is equivalent to BSF
- *    Reference: http://www.agner.org/optimize/instruction_tables.pdf
-*/
-#if defined(_M_IX86) || defined(_M_AMD64)
-#define __builtin_ctzl _tzcnt_u32
-#else
-static __forceinline unsigned long __builtin_ctzl(unsigned long value)
-{
-    unsigned long trailing_zero;
-    _BitScanForward(&trailing_zero, value);
-    return trailing_zero;
-}
-#endif
-#endif
-
 #include "match.h"
 
 /* ===========================================================================
@@ -1407,29 +1380,20 @@ local uInt longest_match(s, cur_match)
          * necessary to put more guard bytes at the end of the window, or
          * to check more often for insufficient lookahead.
          */
-        scan += 2, match+=2;
-        Assert(*scan == *match, "match[2]?");
-        do {
-            unsigned long sv = *(unsigned long*)(void*)scan;
-            unsigned long mv = *(unsigned long*)(void*)match;
-            unsigned long xor = sv ^ mv;
-            if (xor) {
-                int match_byte = __builtin_ctzl(xor) / 8;
-                scan += match_byte;
-                match += match_byte;
-                break;
-            } else {
-                scan += sizeof(unsigned long);
-                match += sizeof(unsigned long);
-            }
-        } while (scan < strend);
+        Assert(scan[2] == match[2], "match[2]?");
 
-        if (scan > strend)
-            scan = strend;
+#if defined(_M_IX86) || defined(_M_AMD64)
+        len = compare256_sse2(scan + 2, match + 2) + 2;
+#else
+#if defined(UNALIGNED64_OK)
+        len = compare256_unaligned_64(scan + 2, match + 2) + 2;
+#else
+        // not supported
+        len = compare256_unaligned_32(scan + 2, match + 2) + 2
+#endif
+#endif
+        Assert(scan + len <= s->window + (unsigned) (s->window_size - 1), "wild scan");
 
-        Assert(scan <= s->window + (unsigned) (s->window_size - 1), "wild scan");
-
-        len = MAX_MATCH - (int) (strend - scan);
         scan = strend - MAX_MATCH;
 
 #else /* UNALIGNED_OK */

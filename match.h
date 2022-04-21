@@ -161,30 +161,21 @@ local uInt longest_match_slow(s, cur_match)
         scan++;
 
         /* Found a match candidate. Compare strings to determine its length. */
-		//scan += 2, match += 2;
-		Assert(*scan == *match, "match[2]?");
-		do {
-			unsigned long sv = *(unsigned long*)(void*)scan;
-			unsigned long mv = *(unsigned long*)(void*)match;
-			unsigned long xor = sv ^ mv;
-			if (xor) {
-				int match_byte = __builtin_ctzl(xor) / 8;
-				scan += match_byte;
-				match += match_byte;
-				break;
-			}
-			else {
-				scan += sizeof(unsigned long);
-				match += sizeof(unsigned long);
-			}
-		} while (scan < strend);
+        // compare an extra byte because compare256 compares 256 bytes
+        if (*match == *scan)
+        {
+#if defined(_M_IX86) || defined(_M_AMD64)
+        len = compare256_sse2(scan + 1, match + 1) + 2;
+#else
+#if defined(UNALIGNED64_OK)
+        len = compare256_unaligned_64(scan + 1, match + 1) + 2;
+#else
+        // not supported
+        len = compare256_unaligned_32(scan + 1, match + 1) + 2;
+#endif
+#endif
+        Assert(scan + len - 1 <= s->window + (unsigned) (s->window_size - 1), "wild scan");
 
-		if (scan > strend)
-			scan = strend;
-
-		Assert(scan <= s->window + (unsigned)(s->window_size - 1), "wild scan");
-
-		len = MAX_MATCH - (int)(strend - scan);
 		scan = strend - MAX_MATCH;
 
         if (len > best_len) {
@@ -264,6 +255,7 @@ local uInt longest_match_slow(s, cur_match)
                  */
                 UPDATE_MATCH_BASE2;
             }
+        }
         }
         /* follow hash chain */
         cur_match = prev[cur_match & wmask];

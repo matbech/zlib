@@ -53,4 +53,9 @@ extern uint8_t* chunkunroll_avx(uint8_t* out, unsigned* dist, unsigned* len);
 extern uint8_t* chunkmemset_avx(uint8_t* out, unsigned dist, unsigned len);
 extern uint8_t* chunkmemset_safe_avx(uint8_t* out, unsigned dist, unsigned len, unsigned left);
 
+ZLIB_INTERNAL uint32_t compare256_avx2(const uint8_t* src0, const uint8_t* src1);
+//ZLIB_INTERNAL uint32_t compare256_sse2(const uint8_t* src0, const uint8_t* src1);
+
+#include "compare256_sse2.h"
+
 #endif  /* X86_H */
