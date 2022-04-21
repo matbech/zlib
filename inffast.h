@@ -9,3 +9,6 @@
  */
 
 void ZLIB_INTERNAL inflate_fast OF((z_streamp strm, unsigned start));
+
+#define INFLATE_FAST_MIN_HAVE 8
+#define INFLATE_FAST_MIN_LEFT 258

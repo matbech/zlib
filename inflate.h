@@ -122,4 +122,5 @@ struct inflate_state {
     int sane;                   /* if false, allow invalid distance too far */
     int back;                   /* bits back of last unprocessed length/lit */
     unsigned was;               /* initial length of match */
+    unsigned chunksize;         /* size of memory copying chunk */
 };

@@ -64,6 +64,15 @@
     <ClCompile Include="arch\x86\slide_hash_sse2.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
+    <ClCompile Include="arch\x86\chunkset_avx.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86\chunkset_sse2.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="chunkset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">
@@ -112,6 +121,15 @@
       <Filter>Source Files\arch\aarch64</Filter>
     </ClInclude>
     <ClInclude Include="match.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chunkset_tpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inflate_p.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chunkset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

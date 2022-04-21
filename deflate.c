@@ -51,11 +51,11 @@
 
 #include "deflate.h"
 #if defined(_M_IX86) || defined(_M_AMD64)
-#include "arch\x86\x86.h"
-#include "arch\x86\insert_string_sse42.h"
+#include "arch/x86/x86.h"
+#include "arch/x86/insert_string_sse42.h"
 #elif defined(_M_ARM64)
-#include "arch\aarch64\aarch64.h"
-#include "arch\aarch64\update_hash.h"
+#include "arch/aarch64/aarch64.h"
+#include "arch/aarch64/update_hash.h"
 #endif
 
 const char deflate_copyright[] =
@@ -1751,9 +1751,6 @@ local INLINE void fill_window(deflate_state *s)
 
 /* Maximum stored block length in deflate format (not including header). */
 #define MAX_STORED 65535
-
-/* Minimum of a and b. */
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 /* ===========================================================================
  * Copy without compression as much as possible from the input stream, return

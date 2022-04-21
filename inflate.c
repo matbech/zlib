@@ -84,6 +84,10 @@
 #include "inftrees.h"
 #include "inflate.h"
 #include "inffast.h"
+#include "chunkset.h"
+#if defined(_M_IX86) || defined(_M_AMD64)
+#include "arch/x86/x86.h"
+#endif
 
 #ifdef MAKEFIXED
 #  ifndef BUILDFIXED
@@ -228,6 +232,11 @@ int stream_size;
     state->strm = strm;
     state->window = Z_NULL;
     state->mode = HEAD;     /* to pass state test in inflateReset2() */
+#if defined(_M_IX86) || defined(_M_AMD64)
+    state->chunksize = chunksize_sse2();
+#else
+    state->chunksize = chunksize_c();
+#endif
     ret = inflateReset2(strm, windowBits);
     if (ret != Z_OK) {
         ZFREE(strm, state);
@@ -1058,7 +1067,7 @@ int flush;
             state->mode = LEN;
                 /* fallthrough */
         case LEN:
-            if (have >= 6 && left >= 258) {
+            if (have >= INFLATE_FAST_MIN_HAVE && left >= INFLATE_FAST_MIN_LEFT) {
                 RESTORE();
                 inflate_fast(strm, out);
                 LOAD();

@@ -38,4 +38,19 @@ void ZLIB_INTERNAL crc_fold(unsigned* z_const s,
     size_t len);
 unsigned ZLIB_INTERNAL crc_fold_512to32(unsigned* z_const s);
 
+/* memory chunking */
+extern uint32_t chunksize_sse2(void);
+extern uint8_t* chunkcopy_sse2(uint8_t* out, uint8_t const* from, unsigned len);
+extern uint8_t* chunkcopy_safe_sse2(uint8_t* out, uint8_t const* from, unsigned len, uint8_t* safe);
+extern uint8_t* chunkunroll_sse2(uint8_t* out, unsigned* dist, unsigned* len);
+extern uint8_t* chunkmemset_sse2(uint8_t* out, unsigned dist, unsigned len);
+extern uint8_t* chunkmemset_safe_sse2(uint8_t* out, unsigned dist, unsigned len, unsigned left);
+
+extern uint32_t chunksize_avx(void);
+extern uint8_t* chunkcopy_avx(uint8_t* out, uint8_t const* from, unsigned len);
+extern uint8_t* chunkcopy_safe_avx(uint8_t* out, uint8_t const* from, unsigned len, uint8_t* safe);
+extern uint8_t* chunkunroll_avx(uint8_t* out, unsigned* dist, unsigned* len);
+extern uint8_t* chunkmemset_avx(uint8_t* out, unsigned dist, unsigned len);
+extern uint8_t* chunkmemset_safe_avx(uint8_t* out, unsigned dist, unsigned len, unsigned left);
+
 #endif  /* X86_H */
