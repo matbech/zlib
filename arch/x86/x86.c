@@ -40,39 +40,18 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
 #else
 #include <intrin.h>
 #include <windows.h>
-#include <stdint.h>
 
-static volatile long once_control = 0;
-static int fake_pthread_once(volatile long *once_control,
-                             void (*init_routine)(void));
+static INIT_ONCE once_control /*= INIT_ONCE_STATIC_INIT*/;
+
+static _Success_(return != FALSE) BOOL CALLBACK _x86_check_features_once(PINIT_ONCE InitOnce, PVOID Parameter, PVOID * Context)
+{
+    _x86_check_features();
+	return TRUE;
+}
 
 void x86_check_features(void)
 {
-    fake_pthread_once(&once_control, _x86_check_features);
-}
-
-/* Copied from "perftools_pthread_once" in tcmalloc */
-static int fake_pthread_once(volatile long *once_control,
-                             void (*init_routine)(void)) {
-    // Try for a fast path first. Note: this should be an acquire semantics read
-    // It is on x86 and x64, where Windows runs.
-    if (*once_control != 1) {
-        while (1) {
-            switch (InterlockedCompareExchange(once_control, 2, 0)) {
-                case 0:
-                    init_routine();
-                    InterlockedExchange(once_control, 1);
-                    return 0;
-                case 1:
-                    // The initializer has already been executed
-                    return 0;
-                default:
-                    // The initializer is being processed by another thread
-                    SwitchToThread();
-            }
-        }
-    }
-    return 0;
+    InitOnceExecuteOnce(&once_control, _x86_check_features_once, NULL, NULL);
 }
 
 static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
