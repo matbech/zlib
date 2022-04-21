@@ -17,6 +17,8 @@ typedef struct internal_state deflate_state;
 extern int x86_cpu_has_sse42;
 extern int x86_cpu_has_pclmul;
 extern int x86_cpu_has_avx2;
+extern int x86_cpu_has_avx512;
+extern int x86_cpu_has_vpclmulqdq;
 
 void x86_check_features(void);
 

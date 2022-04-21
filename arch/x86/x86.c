@@ -13,6 +13,8 @@
 int x86_cpu_has_sse42 = 0;
 int x86_cpu_has_pclmul = 0;
 int x86_cpu_has_avx2 = 0;
+int x86_cpu_has_avx512 = 0;
+int x86_cpu_has_vpclmulqdq = 0;
 
 static void _x86_check_features(void);
 
@@ -90,6 +92,8 @@ static void _x86_check_features(void)
         cpuidex(7 /*CPU_EXTENDED_PROC_INFO_FEATURE_BITS*/, 0, &eax, &ebx, &ecx, &edx);
 
         x86_cpu_has_avx2 = ebx & (1 << 5);
+        x86_cpu_has_avx512 = ebx & 0x00010000;
+        x86_cpu_has_vpclmulqdq = ecx & 0x400;
     }
     else
     {
