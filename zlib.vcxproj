@@ -141,7 +141,6 @@
     <Link>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -184,7 +183,6 @@
     </Midl>
     <Link>
       <AdditionalDependencies>onecore.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -230,7 +228,6 @@
     <Link>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -270,7 +267,6 @@
     <Link>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
@@ -311,7 +307,6 @@
     </Midl>
     <Link>
       <AdditionalDependencies>onecore.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
@@ -354,7 +349,6 @@
     <Link>
       <AdditionalDependencies>
       </AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
