@@ -9,6 +9,7 @@
 
 #if defined(_M_IX86) || defined(_M_AMD64)
 #include "arch/x86/adler32_simd.h"
+#include "arch/x86/x86.h"
 #elif defined(_M_ARM64)
 #include "arch/aarch64/aarch64.h"
 #endif
@@ -72,7 +73,14 @@ uLong ZEXPORT adler32_z(adler, buf, len)
     z_size_t len;
 {
 #if defined(_M_IX86) || defined(_M_AMD64)
-    return adler32_simd_(adler, buf, len);
+    /* the AVX2 version is slower (SSE to AVX switch penality?). Disabled for now.
+    //x86_check_features();
+    if (x86_cpu_has_avx2)
+    {
+        return adler32_avx2(adler, buf, len);
+    }
+     */
+    return adler32_ssse3(adler, buf, len);
 #elif defined(_M_ARM64)
     return adler32_neon(adler, buf, len);
 #else

@@ -10,7 +10,5 @@
 #include "../../zconf.h"
 #include "../../zutil.h"
 
-uint32_t ZLIB_INTERNAL adler32_simd_(
-    uint32_t adler,
-    const unsigned char *buf,
-    z_size_t len);
+uint32_t ZLIB_INTERNAL adler32_ssse3(uint32_t adler, const unsigned char* buf, size_t len);
+uint32_t ZLIB_INTERNAL adler32_avx2(uint32_t adler, const unsigned char* buf, size_t len);

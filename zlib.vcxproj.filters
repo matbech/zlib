@@ -52,10 +52,13 @@
     <ClCompile Include="arch\aarch64\insert_string_acle.c">
       <Filter>Source Files\arch\aarch64</Filter>
     </ClCompile>
-    <ClCompile Include="arch\x86\adler32_simd.c">
+    <ClCompile Include="arch\x86\slide_sse.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
-    <ClCompile Include="arch\x86\slide_sse.c">
+    <ClCompile Include="arch\x86\adler32_avx2.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86\adler32_ssse3.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
   </ItemGroup>
