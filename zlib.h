@@ -1748,32 +1748,6 @@ ZEXTERN uLong ZEXPORT crc32_z OF((uLong crc, const Bytef *buf,
      Same as crc32(), but with a size_t length.
 */
 
-/* The struct should preferably be aligned to a 16 byte boundary for aligned access (128-bit SIMD register) */
-/* requires C++11 */
-#ifdef __cplusplus
-typedef struct alignas(16) z_crc32_state_s {
-    unsigned crc0[4 * 5];
-} FAR z_crc32_state;
-#else
-/* ISO C11 supports_Alignof in stdalign.h */
-#ifdef _MSC_VER
-#define zalign(x) __declspec(align(x))
-#else
-#define zalign(x) __attribute__((aligned((x))))
-#endif
-
-typedef struct z_crc32_state_s {
-    unsigned zalign(16) crc0[4 * 5];
-} FAR z_crc32_state;
-#endif
-
-ZEXTERN void ZEXPORT crc32_init OF((z_crc32_state *z_const state));
-
-ZEXTERN void ZEXPORT crc32_update OF((z_crc32_state *z_const state, const Bytef *buf,
-    z_size_t len));
-
-ZEXTERN uLong ZEXPORT crc32_final OF((z_crc32_state *z_const state));
-
 /*
 ZEXTERN uLong ZEXPORT crc32_combine OF((uLong crc1, uLong crc2, z_off_t len2));
 

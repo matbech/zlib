@@ -71,17 +71,14 @@ local unsigned long crc32_big OF((unsigned long,
 #  define TBLS 1
 #endif /* BYFOUR */
 
-/* Local functions for crc concatenation */
-local unsigned long gf2_matrix_times OF((unsigned long *mat,
-                                         unsigned long vec));
-local void gf2_matrix_square OF((unsigned long *square, unsigned long *mat));
-local uLong crc32_combine_ OF((uLong crc1, uLong crc2, z_off64_t len2));
-
+/* CRC polynomial. */
+#define POLY 0xedb88320         /* p(x) reflected, with x^32 implied */
 
 #ifdef DYNAMIC_CRC_TABLE
 
 local volatile int crc_table_empty = 1;
 local z_crc_t FAR crc_table[TBLS][256];
+local z_crc_t FAR x2n_table[32];
 local void make_crc_table OF((void));
 #ifdef MAKECRCH
    local void write_table OF((FILE *, const z_crc_t FAR *));
@@ -209,14 +206,63 @@ local void write_table(out, table)
 #include "crc32.h"
 #endif /* DYNAMIC_CRC_TABLE */
 
+/* ========================================================================
+ * Routines used for CRC calculation. Some are also required for the table
+ * generation above.
+ */
+
+/*
+  Return a(x) multiplied by b(x) modulo p(x), where p(x) is the CRC polynomial,
+  reflected. For speed, this requires that a not be zero.
+ */
+local z_crc_t multmodp(a, b)
+    z_crc_t a;
+    z_crc_t b;
+{
+    z_crc_t m, p;
+
+    m = (z_crc_t)1 << 31;
+    p = 0;
+    for (;;) {
+        if (a & m) {
+            p ^= b;
+            if ((a & (m - 1)) == 0)
+                break;
+        }
+        m >>= 1;
+        b = b & 1 ? (b >> 1) ^ POLY : b >> 1;
+    }
+    return p;
+}
+
+/*
+  Return x^(n * 2^k) modulo p(x). Requires that x2n_table[] has been
+  initialized.
+ */
+local z_crc_t x2nmodp(n, k)
+    z_off64_t n;
+    unsigned k;
+{
+    z_crc_t p;
+
+    p = (z_crc_t)1 << 31;           /* x^0 == 1 */
+    while (n) {
+        if (n & 1)
+            p = multmodp(x2n_table[k & 31], p);
+        n >>= 1;
+        k++;
+    }
+    return p;
+}
+
 /* =========================================================================
- * This function can be used by asm versions of crc32()
+ * This function can be used by asm versions of crc32(), and to force the
+ * generation of the CRC tables in a threaded application.
  */
 const z_crc_t FAR * ZEXPORT get_crc_table()
 {
 #ifdef DYNAMIC_CRC_TABLE
-    if (crc_table_empty)
-        make_crc_table();
+    once(&made, make_crc_table);
 #endif /* DYNAMIC_CRC_TABLE */
     return (const z_crc_t FAR *)crc_table;
 }
@@ -232,11 +278,52 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
     const unsigned char FAR *buf;
     z_size_t len;
 {
-    if (buf == Z_NULL) return 0UL;
-
-#ifdef _M_ARM64
+#if defined(_M_ARM64)
+    if (buf == Z_NULL) {
+        return 0UL;
+    }
     return crc32_acle(crc, buf, len);
+#elif defined(_M_IX86) || defined(_M_AMD64)
+    /*
+     * zlib convention is to call crc32(0, NULL, 0); before making
+     * calls to crc32(). So this is a good, early (and infrequent)
+     * place to cache CPU features if needed for those later, more
+     * interesting crc32() calls.
+     */
+#if defined(USE_PCLMUL_CRC)
+     /*
+      * crc32_sse42_simd_ buffer size constraints: see the use in zlib/crc32.c
+      * for computing the crc32 of an arbitrary length buffer.
+      */
+#define Z_CRC32_SSE42_MINIMUM_LENGTH 64
+#define Z_CRC32_SSE42_CHUNKSIZE_MASK 15
+
+     /*
+      * Use x86 sse4.2+pclmul SIMD to compute the crc32. Since this
+      * routine can be freely used, check CPU features here.
+      */
+    if (buf == Z_NULL) {
+        if (!len) /* Assume user is calling crc32(0, NULL, 0); */
+            x86_check_features();
+        return 0UL;
+    }
+
+    if (x86_cpu_has_pclmul && len >= Z_CRC32_SSE42_MINIMUM_LENGTH) {
+        /* crc32 16-byte chunks */
+        z_size_t chunk_size = len & ~Z_CRC32_SSE42_CHUNKSIZE_MASK;
+        crc = ~crc32_sse42_simd_(buf, chunk_size, ~(uint32_t) crc);
+        /* check remaining data */
+        len -= chunk_size;
+        if (!len)
+            return crc;
+        /* Fall into the default crc32 for the remaining data. */
+        buf += chunk_size;
+    }
 #else
+    if (buf == Z_NULL) {
+        return 0UL;
+    }
+#endif /* CRC32_SIMD_SSE42_PCLMUL */
 
 #ifdef DYNAMIC_CRC_TABLE
     if (crc_table_empty)
@@ -383,90 +470,16 @@ local unsigned long crc32_big(crc, buf, len)
 
 #endif /* BYFOUR */
 
-#define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
-
 /* ========================================================================= */
-local unsigned long gf2_matrix_times(mat, vec)
-    unsigned long *mat;
-    unsigned long vec;
-{
-    unsigned long sum;
-
-    sum = 0;
-    while (vec) {
-        if (vec & 1)
-            sum ^= *mat;
-        vec >>= 1;
-        mat++;
-    }
-    return sum;
-}
-
-/* ========================================================================= */
-local void gf2_matrix_square(square, mat)
-    unsigned long *square;
-    unsigned long *mat;
-{
-    int n;
-
-    for (n = 0; n < GF2_DIM; n++)
-        square[n] = gf2_matrix_times(mat, mat[n]);
-}
-
-/* ========================================================================= */
-local uLong crc32_combine_(crc1, crc2, len2)
+uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
     uLong crc1;
     uLong crc2;
     z_off64_t len2;
 {
-    int n;
-    unsigned long row;
-    unsigned long even[GF2_DIM];    /* even-power-of-two zeros operator */
-    unsigned long odd[GF2_DIM];     /* odd-power-of-two zeros operator */
-
-    /* degenerate case (also disallow negative lengths) */
-    if (len2 <= 0)
-        return crc1;
-
-    /* put operator for one zero bit in odd */
-    odd[0] = 0xedb88320UL;          /* CRC-32 polynomial */
-    row = 1;
-    for (n = 1; n < GF2_DIM; n++) {
-        odd[n] = row;
-        row <<= 1;
-    }
-
-    /* put operator for two zero bits in even */
-    gf2_matrix_square(even, odd);
-
-    /* put operator for four zero bits in odd */
-    gf2_matrix_square(odd, even);
-
-    /* apply len2 zeros to crc1 (first square will put the operator for one
-       zero byte, eight zero bits, in even) */
-    do {
-        /* apply zeros operator for this bit of len2 */
-        gf2_matrix_square(even, odd);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times(even, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-        if (len2 == 0)
-            break;
-
-        /* another iteration of the loop with odd and even swapped */
-        gf2_matrix_square(odd, even);
-        if (len2 & 1)
-            crc1 = gf2_matrix_times(odd, crc1);
-        len2 >>= 1;
-
-        /* if no more bits set, then done */
-    } while (len2 != 0);
-
-    /* return combined crc */
-    crc1 ^= crc2;
-    return crc1;
+#ifdef DYNAMIC_CRC_TABLE
+    once(&made, make_crc_table);
+#endif /* DYNAMIC_CRC_TABLE */
+    return multmodp(x2nmodp(len2, 3), crc1) ^ crc2;
 }
 
 /* ========================================================================= */
@@ -475,23 +488,17 @@ uLong ZEXPORT crc32_combine(crc1, crc2, len2)
     uLong crc2;
     z_off_t len2;
 {
-    return crc32_combine_(crc1, crc2, len2);
-}
-
-uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
-    uLong crc1;
-    uLong crc2;
-    z_off64_t len2;
-{
-    return crc32_combine_(crc1, crc2, len2);
+    return crc32_combine64(crc1, crc2, len2);
 }
 
 /* ========================================================================= */
 uLong ZEXPORT crc32_combine_gen64(len2)
     z_off64_t len2;
 {
-    // TODO: not implemented
-    return 0;
+#ifdef DYNAMIC_CRC_TABLE
+    once(&made, make_crc_table);
+#endif /* DYNAMIC_CRC_TABLE */
+    return x2nmodp(len2, 3);
 }
 
 /* ========================================================================= */
@@ -507,8 +514,7 @@ uLong crc32_combine_op(crc1, crc2, op)
     uLong crc2;
     uLong op;
 {
-    // TODO: not implemented
-    return 0;
+    return multmodp(op, crc1) ^ crc2;
 }
 
 ZLIB_INTERNAL void crc_reset(deflate_state *const s)
@@ -542,37 +548,4 @@ ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 #endif
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
-}
-
-void ZEXPORT crc32_init(z_crc32_state *z_const state)
-{
-#if defined(USE_PCLMUL_CRC)
-    x86_check_features();
-    if (x86_cpu_has_pclmul) {
-        crc_fold_init(state->crc0);
-        return;
-    }
-#endif
-    state->crc0[0] = crc32_z(0L, Z_NULL, 0);
-}
-
-void ZEXPORT crc32_update(z_crc32_state *z_const state, const Bytef *buf, z_size_t len)
-{
-#if defined(USE_PCLMUL_CRC)
-    if (x86_cpu_has_pclmul) {
-        crc_fold(state->crc0, buf, len);
-        return;
-    }
-#endif
-    state->crc0[0] = crc32_z(state->crc0[0], buf, len);
-}
-
-uLong ZEXPORT crc32_final(z_crc32_state *z_const state)
-{
-#if defined(USE_PCLMUL_CRC)
-    if (x86_cpu_has_pclmul) {
-        return crc_fold_512to32(state->crc0);
-    }
-#endif
-    return state->crc0[0];
 }

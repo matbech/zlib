@@ -38,6 +38,15 @@ void ZLIB_INTERNAL crc_fold(unsigned* z_const s,
     size_t len);
 unsigned ZLIB_INTERNAL crc_fold_512to32(unsigned* z_const s);
 
+/*
+ * crc32_sse42_simd_(): compute the crc32 of the buffer, where the buffer
+ * length must be at least 64, and a multiple of 16.
+ */
+uint32_t ZLIB_INTERNAL crc32_sse42_simd_(
+    const unsigned char* buf,
+    z_size_t len,
+    uint32_t crc);
+
 /* memory chunking */
 extern uint32_t chunksize_sse2(void);
 extern uint8_t* chunkcopy_sse2(uint8_t* out, uint8_t const* from, unsigned len);
