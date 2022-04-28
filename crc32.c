@@ -547,6 +547,7 @@ ZLIB_INTERNAL void copy_with_crc(z_streamp strm, Bytef *dst, long size)
 void ZEXPORT crc32_init(z_crc32_state *z_const state)
 {
 #if defined(USE_PCLMUL_CRC)
+    x86_check_features();
     if (x86_cpu_has_pclmul) {
         crc_fold_init(state->crc0);
         return;
