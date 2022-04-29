@@ -39,6 +39,16 @@ static void cpuidex(int info, int subinfo, unsigned* eax, unsigned* ebx, unsigne
     __cpuid_count(info, subinfo, *eax, *ebx, *ecx, *edx);
 }
 #else
+
+// In the CRT in Visual C++ isa_availability.h is available which exposes CPU features already:
+// #include <isa_availability.h>
+// __isa_enabled & (1 << __ISA_AVAILABLE_SSE42)
+// __isa_enabled & (1 << __ISA_AVAILABLE_AVX)
+// __isa_enabled & (1 << __ISA_AVAILABLE_AVX2)
+// __isa_enabled & (1 << __ISA_AVAILABLE_AVX512)
+//
+// We won't be able to check for vpclmulqdq though
+
 #include <intrin.h>
 #include <windows.h>
 
@@ -52,6 +62,9 @@ static _Success_(return != FALSE) BOOL CALLBACK _x86_check_features_once(PINIT_O
 
 void x86_check_features(void)
 {
+    // Consider using a flag whether _x86_check_features_once has been called or not
+    // In a multi thread environment, in the worst case _x86_check_features_once is called
+    // multiple times instead of once.
     InitOnceExecuteOnce(&once_control, _x86_check_features_once, NULL, NULL);
 }
 
