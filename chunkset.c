@@ -14,9 +14,11 @@ typedef uint64_t chunk_t;
 #define HAVE_CHUNKMEMSET_4
 #define HAVE_CHUNKMEMSET_8
 
+/*
 static INLINE void chunkmemset_1(uint8_t *from, chunk_t *chunk) {
     memset(chunk, *from, sizeof(chunk_t));
 }
+*/
 
 static INLINE void chunkmemset_4(uint8_t *from, chunk_t *chunk) {
     uint8_t *dest = (uint8_t *)chunk;
