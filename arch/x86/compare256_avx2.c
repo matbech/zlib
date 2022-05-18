@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-static INLINE uint32_t compare256_avx2_static(const uint8_t *src0, const uint8_t *src1) {
+uint32_t compare256_avx2_static(const uint8_t *src0, const uint8_t *src1) {
     uint32_t len = 0;
 
     do {

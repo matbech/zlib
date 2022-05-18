@@ -76,6 +76,9 @@
     <ClCompile Include="arch\x86\compare256_avx2.c">
       <Filter>Source Files\arch\x86</Filter>
     </ClCompile>
+    <ClCompile Include="arch\x86\compare256_sse2.c">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zlib.h">
@@ -137,9 +140,6 @@
     </ClInclude>
     <ClInclude Include="compare256.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="arch\x86\compare256_sse2.h">
-      <Filter>Source Files\arch\x86</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

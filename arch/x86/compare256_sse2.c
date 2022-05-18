@@ -11,7 +11,7 @@
 #include <emmintrin.h>
 #include <stdint.h>
 
-INLINE uint32_t compare256_sse2(const uint8_t *src0, const uint8_t *src1) {
+uint32_t compare256_sse2(const uint8_t *src0, const uint8_t *src1) {
     uint32_t len = 0;
     int align_offset = ((uintptr_t)src0) & 15;
     const uint8_t *end0 = src0 + 256;
