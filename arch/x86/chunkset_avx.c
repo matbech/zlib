@@ -16,12 +16,6 @@ typedef __m256i chunk_t;
 #define HAVE_CHUNKMEMSET_4
 #define HAVE_CHUNKMEMSET_8
 
-/*
-static INLINE void chunkmemset_1(uint8_t *from, chunk_t *chunk) {
-    *chunk = _mm256_set1_epi8(*(int8_t *)from);
-}
-*/
-
 static INLINE void chunkmemset_2(uint8_t *from, chunk_t *chunk) {
     int16_t tmp;
     zmemcpy_2(&tmp, from);
