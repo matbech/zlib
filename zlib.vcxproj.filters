@@ -138,6 +138,9 @@
     <ClInclude Include="compare256.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="arch\x86\compare256_sse2.h">
+      <Filter>Source Files\arch\x86</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
