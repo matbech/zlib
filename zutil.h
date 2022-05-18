@@ -270,7 +270,7 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  pragma intrinsic(_byteswap_ulong)
 #  define ZSWAP32(q) _byteswap_ulong(q)
 
-#elif defined(__Clang__) || (defined(__GNUC__) && \
+#elif defined(__clang__) || (defined(__GNUC__) && \
         (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)))
 #  define ZSWAP32(q) __builtin_bswap32(q)
 
@@ -291,7 +291,7 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif /* ZSWAP32 */
 
 /* Only enable likely/unlikely if the compiler is known to support it */
-#if (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__INTEL_COMPILER) || defined(__Clang__)
+#if (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__INTEL_COMPILER) || defined(__clang__)
 #  ifndef likely
 #    define likely(x)      __builtin_expect(!!(x), 1)
 #  endif
@@ -321,7 +321,7 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 /* Only enable likely/unlikely if the compiler is known to support it */
-#if (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__INTEL_COMPILER) || defined(__Clang__)
+#if (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__INTEL_COMPILER) || defined(__clang__)
 #  define LIKELY_NULL(x)        __builtin_expect((x) != 0, 0)
 #  define LIKELY(x)             __builtin_expect(!!(x), 1)
 #  define UNLIKELY(x)           __builtin_expect(!!(x), 0)
