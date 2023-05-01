@@ -33,6 +33,9 @@
     <Platform>Win32</Platform>
     <ProjectName>zlib</ProjectName>
     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+    <!-- see Microsoft.Cpp.CoreWin.props -->
+    <!-- If onecore_apiset.lib is used, kernel32.lib must be specified in IgnoreSpecificDefaultLibraries -->
+    <CoreLibraryDependencies>onecore.lib</CoreLibraryDependencies>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,10 +73,7 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-  	<!-- see Microsoft.Cpp.CoreWin.props -->
-  	<!-- If onecore_apiset.lib is used, kernel32.lib must be specified in IgnoreSpecificDefaultLibraries -->
-		<CoreLibraryDependencies>onecore.lib</CoreLibraryDependencies>
-  </PropertyGroup> 
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -114,8 +114,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsC</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -229,8 +227,6 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
       <ImportLibrary>
       </ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -355,8 +351,6 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
