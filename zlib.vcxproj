@@ -70,7 +70,10 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
+  	<!-- see Microsoft.Cpp.CoreWin.props -->
+  	<!-- If onecore_apiset.lib is used, kernel32.lib must be specified in IgnoreSpecificDefaultLibraries -->
+		<CoreLibraryDependencies>onecore.lib</CoreLibraryDependencies>
+  </PropertyGroup> 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -183,7 +186,6 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>onecore.lib</AdditionalDependencies>
       <ImportLibrary>
       </ImportLibrary>
       <SubSystem>Console</SubSystem>
@@ -191,7 +193,6 @@
       </Version>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>kernel32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/emittoolversioninfo:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ProjectReference>
@@ -312,7 +313,6 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>onecore.lib</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>
       </ImportLibrary>
@@ -321,7 +321,6 @@
       </Version>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>kernel32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <AdditionalOptions>/emittoolversioninfo:no %(AdditionalOptions)</AdditionalOptions>
